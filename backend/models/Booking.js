@@ -3,6 +3,8 @@ const mongoose = require('mongoose');
 const bookingSchema = new mongoose.Schema({
   bookingId: { type: String, unique: true, required: true },
   movieTitle: { type: String, required: true },
+  moviePoster: { type: String },
+  movieRating: { type: Number },
   movieId: { type: Number, required: true },
   theatreName: { type: String, required: true },
   showTime: { type: String, required: true },

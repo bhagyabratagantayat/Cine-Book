@@ -6,13 +6,16 @@ import Navbar from '../components/Navbar';
 import { Armchair, ChevronRight, Zap, Info, ScreenShare, ShieldCheck } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
+import { useBooking } from '../context/BookingContext';
 
 const SeatBooking = () => {
   const { showId } = useParams();
   const navigate = useNavigate();
   const socket = useSocket();
+  const { bookingData, updateBooking } = useBooking();
+  
   const [show, setShow] = useState(null);
-  const [selectedSeats, setSelectedSeats] = useState([]);
+  const [selectedSeats, setSelectedSeats] = useState(bookingData.seats || []);
   const [lockedSeats, setLockedSeats] = useState({}); // { seatId: userId }
   const [loading, setLoading] = useState(true);
 
@@ -65,17 +68,25 @@ const SeatBooking = () => {
     if (lockedSeats[seatId]) return;
 
     setSelectedSeats(prev => {
+      let newState;
       if (prev.find(s => s.id === seatId)) {
         socket.emit('unlock_seat', { showId, seatId });
-        return prev.filter(s => s.id !== seatId);
+        newState = prev.filter(s => s.id !== seatId);
       } else {
         if (prev.length >= 6) {
           toast.error('Max 6 seats per booking');
           return prev;
         }
         socket.emit('lock_seat', { showId, seatId, userId: 'guest' });
-        return [...prev, { id: seatId, price }];
+        newState = [...prev, { id: seatId, price }];
       }
+
+      // Sync with context
+      updateBooking({ 
+        seats: newState, 
+        totalPrice: newState.reduce((sum, s) => sum + s.price, 0) 
+      });
+      return newState;
     });
   };
 
@@ -220,7 +231,7 @@ const SeatBooking = () => {
                      <span className="text-3xl font-black italic text-primary tracking-tighter">₹{totalPrice}</span>
                   </div>
                   <button 
-                    onClick={() => navigate(`/summary/${showId}`, { state: { seats: selectedSeats, totalPrice, show }})}
+                    onClick={() => navigate(`/summary/${showId}`)}
                     className="bg-primary hover:bg-red-600 px-12 py-4 rounded-2xl font-black italic uppercase tracking-widest transition-all shadow-xl shadow-primary/30 flex items-center gap-3"
                   >
                     Proceed to Pay

@@ -4,16 +4,15 @@ import axios from 'axios';
 import Navbar from '../components/Navbar';
 import { Ticket, CreditCard, ShieldCheck, QrCode, ArrowRight } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useBooking } from '../context/BookingContext';
 
 const Summary = () => {
   const { showId } = useParams();
-  const location = useLocation();
   const navigate = useNavigate();
+  const { bookingData } = useBooking();
   const [isProcessing, setIsProcessing] = useState(false);
   
-  const { seats, totalPrice, show } = location.state || { seats: [], totalPrice: 0, show: null };
-  const movie = show?.movie;
-  const theatre = show?.theatre;
+  const { seats, totalPrice, movie, theatre, showTime, showDate } = bookingData;
   
   const convenienceFee = Math.round(totalPrice * 0.1);
   const finalPayable = totalPrice + convenienceFee;
@@ -31,11 +30,13 @@ const Summary = () => {
       // 2. Persist Booking to Backend
       const response = await axios.post((import.meta.env.VITE_API_URL || 'http://localhost:5000') + '/api/bookings', {
         showId: showId,
-        movieId: show?.movieId,
-        movieTitle: show?.movieTitle,
+        movieId: movie?.id,
+        movieTitle: movie?.title,
+        moviePoster: movie?.poster,
+        movieRating: movie?.rating,
         theatreName: theatre?.name,
-        showTime: new Date(show?.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        showDate: new Date(show?.startTime).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }),
+        showTime,
+        showDate,
         seats: seats.map(s => s.id),
         totalAmount: finalPayable,
         paymentId: paymentId,
@@ -53,7 +54,7 @@ const Summary = () => {
     }
   };
 
-  if (!seats.length) return (
+  if (!seats || !seats.length) return (
     <div className="h-screen bg-background flex flex-col items-center justify-center text-white space-y-4">
        <Ticket className="w-16 h-16 text-white/10" />
        <p className="font-bold text-white/40">No seats selected to review.</p>
@@ -80,12 +81,12 @@ const Summary = () => {
               <div className="flex justify-between items-start border-b border-white/5 pb-10">
                 <div className="space-y-2">
                    <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">CineBook Experience</p>
-                   <h2 className="text-3xl font-black tracking-tight uppercase italic text-primary">{show?.movieTitle}</h2>
-                   <p className="text-xs font-bold text-white/50">{theatre?.name} • {show && new Date(show.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+                   <h2 className="text-3xl font-black tracking-tight uppercase italic text-primary">{movie?.title}</h2>
+                   <p className="text-xs font-bold text-white/50">{theatre?.name} • {showTime}</p>
                 </div>
                 <div className="text-right space-y-1">
                    <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">Seats</p>
-                   <p className="text-xl font-black tracking-tight text-white/80">{seats.map(s => s.id).join(', ')}</p>
+                   <p className="text-xl font-black tracking-tight text-white/80">{seats?.map(s => s.id).join(', ')}</p>
                 </div>
               </div>
 

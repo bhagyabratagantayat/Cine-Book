@@ -6,6 +6,7 @@ import DateSelector from '../components/DateSelector';
 import { Calendar, MapPin, Clock, Info as InfoIcon, ChevronRight, Star, Ticket, Play } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
+import { useBooking } from '../context/BookingContext';
 
 const MovieDetails = () => {
   const { id } = useParams();
@@ -13,41 +14,88 @@ const MovieDetails = () => {
   const [movie, setMovie] = useState(null);
   const [theatres, setTheatres] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isSeeding, setIsSeeding] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [selectedShow, setSelectedShow] = useState(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const [movieRes, showsRes] = await Promise.all([
-          axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/movies/${id}`),
-          axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/shows/movie/${id}?date=${selectedDate}`)
-        ]);
-        setMovie(movieRes.data);
-        
-        const grouped = showsRes.data.reduce((acc, show) => {
-          if (!show.theatre) return acc;
-          const theatreId = show.theatre._id;
-          if (!acc[theatreId]) {
-            acc[theatreId] = { details: show.theatre, shows: [] };
-          }
-          acc[theatreId].shows.push(show);
-          return acc;
-        }, {});
-        setTheatres(Object.values(grouped));
-      } catch (error) {
-        console.error('Error fetching data:', error);
-        toast.error('Failed to load movie details or shows');
-      } finally {
-        setLoading(false);
+  const fetchData = async (hideLoader = false) => {
+    if (!hideLoader) setLoading(true);
+    try {
+      const movieRes = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/movies/${id}`);
+      setMovie(movieRes.data);
+
+      const showsRes = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/shows/movie/${id}?date=${selectedDate}`);
+      
+      if (showsRes.data.length === 0 && !isSeeding) {
+        // Trigger Seeding if empty
+        setIsSeeding(true);
+        try {
+          await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/shows/seed`, {
+            movieId: id,
+            movieTitle: movieRes.data.title,
+            moviePoster: movieRes.data.poster_path ? `https://image.tmdb.org/t/p/w500${movieRes.data.poster_path}` : ''
+          });
+          // Refresh after seeding
+          const refreshedShows = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/shows/movie/${id}?date=${selectedDate}`);
+          processShows(refreshedShows.data);
+        } catch (seedErr) {
+          console.error("Seeding failed", seedErr);
+        } finally {
+          setIsSeeding(false);
+        }
+      } else {
+        processShows(showsRes.data);
       }
-    };
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      toast.error('Failed to load movie details or shows');
+    } finally {
+      if (!hideLoader) setLoading(false);
+    }
+  };
+
+  const processShows = (data) => {
+    const grouped = data.reduce((acc, show) => {
+      if (!show.theatre) return acc;
+      const theatreId = show.theatre._id;
+      if (!acc[theatreId]) {
+        acc[theatreId] = { details: show.theatre, shows: [] };
+      }
+      acc[theatreId].shows.push(show);
+      return acc;
+    }, {});
+    setTheatres(Object.values(grouped));
+  };
+
+  useEffect(() => {
     fetchData();
   }, [id, selectedDate]);
 
+  const { updateBooking } = useBooking();
+
   const handleBooking = () => {
     if (!selectedShow) return;
+
+    // Populating Context
+    updateBooking({
+      showId: selectedShow._id,
+      movie: {
+        id: movie.id,
+        title: movie.title,
+        poster: movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : '',
+        rating: movie.vote_average
+      },
+      theatre: {
+        id: selectedShow.theatre._id,
+        name: selectedShow.theatre.name,
+        location: selectedShow.theatre.location
+      },
+      showTime: new Date(selectedShow.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      showDate: new Date(selectedShow.startTime).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }),
+      seats: [], // Reset seats when picking a new show
+      totalPrice: 0
+    });
+
     navigate(`/seat-selection/${selectedShow._id}`);
   };
 
@@ -170,17 +218,23 @@ const MovieDetails = () => {
               {theatres.length > 0 ? theatres.map((t) => (
                 <div key={t.details._id} className="bg-white/5 border border-white/10 rounded-2xl md:rounded-3xl p-6 md:p-8 space-y-6">
                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                      <div className="space-y-1">
-                         <h3 className="text-lg md:text-xl font-black uppercase italic text-white/90">{t.details.name}</h3>
-                         <div className="flex items-center gap-2 text-white/40 text-xs md:text-sm font-bold">
-                            <MapPin className="w-4 h-4" />
-                            {t.details.location}, {t.details.city}
-                         </div>
-                      </div>
-                      <div className="flex w-fit items-center gap-2 md:gap-4 text-[9px] md:text-[10px] font-black uppercase tracking-widest text-primary bg-primary/10 px-3 py-1.5 md:px-4 md:py-2 rounded-xl border border-primary/20">
-                         <Clock className="w-3 h-3 md:w-4 md:h-4" />
-                         Cancel Friendly
-                      </div>
+                       <div className="space-y-1">
+                          <h3 className="text-lg md:text-xl font-black uppercase italic text-white/90">{t.details.name}</h3>
+                          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-white/40 text-[10px] md:text-xs font-bold leading-none">
+                             <div className="flex items-center gap-1.5">
+                                <MapPin className="w-3.5 h-3.5" />
+                                {t.details.location} • {t.details.distance || '2.0 km'}
+                             </div>
+                             <div className="flex items-center gap-1.5 text-yellow-500/80">
+                                <Star className="w-3.5 h-3.5 fill-current" />
+                                {t.details.rating || '4.5'}
+                             </div>
+                          </div>
+                       </div>
+                       <div className="flex w-fit items-center gap-2 md:gap-4 text-[9px] md:text-[10px] font-black uppercase tracking-widest text-primary bg-primary/10 px-3 py-1.5 md:px-4 md:py-2 rounded-xl border border-primary/20">
+                          <Clock className="w-3 h-3 md:w-4 md:h-4" />
+                          Cancel Friendly
+                       </div>
                    </div>
 
                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-4">

@@ -7,7 +7,9 @@ const createBooking = async (req, res) => {
   try {
     const { 
       movieId, 
-      movieTitle, 
+      movieTitle,
+      moviePoster,
+      movieRating,
       theatreName, 
       showTime, 
       showDate, 
@@ -37,12 +39,14 @@ const createBooking = async (req, res) => {
       bookingId,
       movieId,
       movieTitle,
-      theatreName,
-      showTime,
-      showDate,
-      seats,
-      totalAmount,
-      paymentId,
+      moviePoster,
+      movieRating,
+      theatreName, 
+      showTime, 
+      showDate, 
+      seats, 
+      totalAmount, 
+      paymentId, 
       paymentMethod,
       bookingStatus: 'confirmed'
     });

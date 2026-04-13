@@ -1,11 +1,11 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { QRCodeCanvas } from 'qrcode.react'; // Switching to Canvas for better compatibility
+import { QRCodeCanvas } from 'qrcode.react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import Navbar from '../components/Navbar';
-import { Ticket as TicketIcon, MapPin, Calendar, Clock, Armchair, CheckCircle2, Download, Share2, Loader2 } from 'lucide-react';
+import { Ticket as TicketIcon, MapPin, Calendar, Clock, Armchair, CheckCircle2, Download, Share2, Loader2, Star } from 'lucide-react';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
 
@@ -32,6 +32,68 @@ const Ticket = () => {
     fetchBooking();
   }, [bookingId]);
 
+  const generateManualPDF = (booking) => {
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    
+    // Header
+    pdf.setFillColor(20, 20, 20);
+    pdf.rect(0, 0, pageWidth, 40, 'F');
+    pdf.setTextColor(229, 9, 20); // CineBook Red
+    pdf.setFontSize(24);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('CINEBOOK', 20, 25);
+    
+    // Ticket Body
+    pdf.setFillColor(26, 26, 26);
+    pdf.roundedRect(20, 50, pageWidth - 40, 180, 5, 5, 'F');
+    
+    pdf.setTextColor(255, 255, 255);
+    pdf.setFontSize(22);
+    pdf.text(booking.movieTitle.toUpperCase(), 30, 75);
+    
+    pdf.setFontSize(12);
+    pdf.setTextColor(150, 150, 150);
+    pdf.text('BOOKING CONFIRMED', 30, 85);
+    
+    // Details Grid
+    pdf.setDrawColor(50, 50, 50);
+    pdf.line(30, 95, pageWidth - 30, 95);
+    
+    const drawDetail = (label, value, x, y) => {
+      pdf.setFontSize(9);
+      pdf.setTextColor(100, 100, 100);
+      pdf.text(label.toUpperCase(), x, y);
+      pdf.setFontSize(14);
+      pdf.setTextColor(255, 255, 255);
+      pdf.text(value, x, y + 8);
+    };
+    
+    drawDetail('Theatre', booking.theatreName, 30, 110);
+    drawDetail('Date', booking.showDate, 120, 110);
+    drawDetail('Time', booking.showTime, 30, 135);
+    drawDetail('Seats', booking.seats.join(', '), 120, 135);
+    
+    pdf.line(30, 155, pageWidth - 30, 155);
+    
+    drawDetail('Booking ID', booking.bookingId, 30, 175);
+    drawDetail('Total Paid', `Rs. ${booking.totalAmount}`, 120, 175);
+    
+    // QR Substitute
+    pdf.setFillColor(255, 255, 255);
+    pdf.rect(pageWidth - 60, 185, 30, 30, 'F');
+    pdf.setTextColor(0, 0, 0);
+    pdf.setFontSize(6);
+    pdf.text('SCAN AT ENTRY', pageWidth - 55, 218);
+    
+    // Footer
+    pdf.setFontSize(10);
+    pdf.setTextColor(100, 100, 100);
+    pdf.text('This is a computer generated ticket. No signature required.', pageWidth / 2, 250, { align: 'center' });
+    
+    pdf.save(`Ticket_Fallback_${booking.bookingId}.pdf`);
+  };
+
   const handleDownloadPDF = async () => {
     if (!ticketRef.current || isDownloading) return;
     
@@ -39,37 +101,69 @@ const Ticket = () => {
     const loadingToast = toast.loading('Generating your ticket PDF...');
 
     try {
+      // 1. Wait for images and QR to be fully ready
+      await new Promise(resolve => setTimeout(resolve, 800));
+
+      // 2. Capture using html2canvas
       const canvas = await html2canvas(ticketRef.current, {
-        scale: 3, // Increased scale for better resolution
+        scale: 2, // Optimal scale as requested
         useCORS: true,
+        allowTaint: true,
         backgroundColor: '#1A1A1A',
-        logging: true, // Enabled logging for debugging in dev
-        onclone: (document) => {
-          // Important: Replace all Tailwind dynamic colors with hex for html2canvas compatibility
-          const elements = document.getElementsByClassName('ticket-container');
-          Array.from(elements).forEach(el => {
-            el.style.backgroundColor = '#1A1A1A';
+        logging: false,
+        onclone: (clonedDoc) => {
+          // 3. REMOVE problematic CSS that breaks capture
+          const elements = clonedDoc.querySelectorAll('*');
+          elements.forEach(el => {
+             const style = window.getComputedStyle(el);
+             if (style.backdropFilter !== 'none' || style.filter !== 'none') {
+                el.style.backdropFilter = 'none';
+                el.style.filter = 'none';
+             }
+             // Specifically remove the blur-sm class if present
+             el.classList.remove('blur-sm');
           });
+          
+          // Ensure background is solid
+          const container = clonedDoc.querySelector('.ticket-container');
+          if (container) {
+             container.style.backgroundColor = '#1A1A1A';
+             container.style.borderRadius = '2rem';
+          }
         }
       });
 
-      const imgData = canvas.toDataURL('image/jpeg', 1.0);
+      const imgData = canvas.toDataURL('image/jpeg', 0.95);
       const pdf = new jsPDF({
         orientation: 'p',
         unit: 'mm',
         format: 'a4',
       });
 
-      const imgWidth = 190;
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      
+      const imgWidth = pageWidth - 40; // 20mm margins
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
       
-      pdf.addImage(imgData, 'JPEG', 10, 20, imgWidth, imgHeight);
-      pdf.save(`Ticket_${booking.bookingId}.pdf`);
+      // Center the ticket
+      const x = (pageWidth - imgWidth) / 2;
+      const y = (pageHeight - imgHeight) / 2;
+
+      pdf.addImage(imgData, 'JPEG', x, y, imgWidth, imgHeight);
+      pdf.save(`CineBook_Ticket_${booking.bookingId}.pdf`);
       
       toast.success('Ticket downloaded successfully!', { id: loadingToast });
     } catch (error) {
-      console.error('PDF Generation Error:', error);
-      toast.error('Failed to generate PDF. Please try again.', { id: loadingToast });
+      console.error('High-Quality PDF Generation Failed. Switching to manual fallback...', error);
+      
+      try {
+        generateManualPDF(booking);
+        toast.success('Generated Standard Ticket (Fallback Mode)', { id: loadingToast });
+      } catch (fallbackError) {
+        console.error('Ultimate Fallback Failure:', fallbackError);
+        toast.error('Failed to generate PDF. Please try again.', { id: loadingToast });
+      }
     } finally {
       setIsDownloading(false);
     }
@@ -110,22 +204,42 @@ const Ticket = () => {
              <div className="absolute top-1/2 -right-3 -translate-y-1/2 w-6 h-6 rounded-full z-10" style={{ backgroundColor: '#141414' }} />
 
              <div className="rounded-[2rem] overflow-hidden border border-white/5 shadow-2xl relative" style={{ backgroundColor: '#1A1A1A' }}>
-                
                 {/* Header (Branding) */}
                 <div className="h-1" style={{ backgroundColor: '#E50914' }} />
 
-                <div className="p-8 space-y-10">
-                   {/* Movie Info */}
-                   <div className="flex justify-between items-start">
-                      <div className="space-y-2 max-w-[70%]">
-                         <h2 className="text-4xl font-black italic tracking-tighter uppercase leading-none" style={{ color: '#FFFFFF' }}>{booking.movieTitle}</h2>
-                         <div className="flex items-center gap-2" style={{ color: 'rgba(255, 255, 255, 0.4)' }}>
-                            <span className="px-2 py-0.5 rounded italic text-[10px] font-black uppercase" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}>English</span>
-                            <span className="px-2 py-0.5 rounded italic text-[10px] font-black uppercase whitespace-nowrap" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}>Laser 4K</span>
+                {/* Movie Header with Poster Backdrop */}
+                <div className="relative h-48 overflow-hidden">
+                   <img 
+                      src={booking.moviePoster || 'https://via.placeholder.com/500x750?text=CineBook'} 
+                      className="w-full h-full object-cover opacity-30 blur-sm scale-110"
+                      alt="Backdrop"
+                   />
+                   <div className="absolute inset-0 bg-gradient-to-t from-[#1A1A1A] to-transparent" />
+                   <div className="absolute bottom-6 left-8 flex items-end gap-6">
+                      <img 
+                         src={booking.moviePoster} 
+                         className="w-20 rounded-lg shadow-2xl border border-white/10"
+                         alt="Poster"
+                      />
+                      <div className="pb-1">
+                         <div className="flex items-center gap-2 mb-1">
+                            <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
+                            <span className="text-white text-[10px] font-black">{booking.movieRating ? booking.movieRating.toFixed(1) : 'NR'}</span>
                          </div>
+                         <h2 className="text-2xl font-black italic tracking-tighter uppercase leading-none" style={{ color: '#FFFFFF' }}>{booking.movieTitle}</h2>
                       </div>
-                      <div className="w-20 h-20 bg-white rounded-2xl flex items-center justify-center p-2 shadow-2xl">
-                         <QRCodeCanvas value={`CINEBOOK-${booking.bookingId}`} size={64} level="H" includeMargin={false} />
+                   </div>
+                </div>
+
+                <div className="p-8 pt-4 space-y-10">
+                   {/* Sync IDs and QR */}
+                   <div className="flex justify-between items-center">
+                      <div className="flex items-center gap-2" style={{ color: 'rgba(255, 255, 255, 0.4)' }}>
+                         <span className="px-2 py-0.5 rounded italic text-[10px] font-black uppercase" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}>English</span>
+                         <span className="px-2 py-0.5 rounded italic text-[10px] font-black uppercase whitespace-nowrap" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}>Laser 4K</span>
+                      </div>
+                      <div className="bg-white rounded-lg flex items-center justify-center p-1.5 shadow-2xl">
+                         <QRCodeCanvas value={`CINEBOOK-${booking.bookingId}`} size={48} level="H" includeMargin={false} />
                       </div>
                    </div>
 

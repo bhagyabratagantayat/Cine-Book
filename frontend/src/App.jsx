@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { SocketProvider } from './context/SocketContext';
+import { BookingProvider } from './context/BookingContext';
 
 // Real Pages
 import Home from './pages/Home';
@@ -13,7 +14,8 @@ import Ticket from './pages/Ticket';
 function App() {
   return (
     <SocketProvider>
-      <Router>
+      <BookingProvider>
+        <Router>
         <div className="min-h-screen bg-background text-white">
           <Toaster position="top-center" />
           <Routes>
@@ -27,6 +29,7 @@ function App() {
           </Routes>
         </div>
       </Router>
+      </BookingProvider>
     </SocketProvider>
   );
 }

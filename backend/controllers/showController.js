@@ -63,4 +63,61 @@ const getShowById = async (req, res) => {
   }
 };
 
-module.exports = { getShowsByMovie, getShowById };
+// @desc    Seed shows for a specific movie dynamically
+// @route   POST /api/shows/seed
+const seedShowtimes = async (req, res) => {
+  try {
+    const { movieId, movieTitle, moviePoster } = req.body;
+    if (!movieId) return res.status(400).json({ message: 'Movie ID required' });
+
+    // 1. Ensure Theatres exist
+    let theatres = await Theatre.find();
+    if (theatres.length === 0) {
+      theatres = await Theatre.insertMany([
+        { name: 'PVR INOX: Forum Mall', location: 'Bhubaneswar', distance: '1.2 km', rating: 4.8 },
+        { name: 'Cinepolis: Esplanade One', location: 'Rasulgarh', distance: '3.5 km', rating: 4.5 },
+        { name: 'Maharaja Cinema', location: 'Bhoi Nagar', distance: '0.8 km', rating: 4.2 },
+        { name: 'INOX: DN Regalia', location: 'Patrapada', distance: '5.6 km', rating: 4.3 }
+      ]);
+    }
+
+    // 2. Generate Shows for next 7 days
+    const times = ["10:30 AM", "1:45 PM", "5:00 PM", "8:30 PM"];
+    const showsToSeed = [];
+
+    for (let day = 0; day < 7; day++) {
+      const date = new Date();
+      date.setDate(date.getDate() + day);
+      date.setHours(0, 0, 0, 0);
+
+      theatres.forEach(theatre => {
+        times.forEach(timeStr => {
+          const [time, period] = timeStr.split(' ');
+          let [h, m] = time.split(':').map(Number);
+          if (period === 'PM' && h !== 12) h += 12;
+          
+          const startTime = new Date(date);
+          startTime.setHours(h, m);
+
+          showsToSeed.push({
+            movieId: Number(movieId),
+            movieTitle: movieTitle || 'Movie',
+            moviePoster: moviePoster || '',
+            theatre: theatre._id,
+            startTime,
+            language: 'English',
+            price: { front: 150, middle: 250, premium: 450 },
+            bookedSeats: []
+          });
+        });
+      });
+    }
+
+    await Show.insertMany(showsToSeed);
+    res.status(201).json({ message: `Seeded ${showsToSeed.length} shows for movie ${movieId}` });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+module.exports = { getShowsByMovie, getShowById, seedShowtimes };

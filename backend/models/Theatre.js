@@ -4,6 +4,8 @@ const theatreSchema = new mongoose.Schema({
   name: { type: String, required: true },
   location: { type: String, required: true },
   city: { type: String, default: 'Bhubaneswar' },
+  distance: { type: String, default: '2.5 km' },
+  rating: { type: Number, default: 4.5 },
   seatLayout: {
     rows: [{
       label: { type: String },
