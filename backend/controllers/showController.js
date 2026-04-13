@@ -51,7 +51,6 @@ const getShowsByMovie = async (req, res) => {
 const getShowById = async (req, res) => {
   try {
     const show = await Show.findById(req.params.id)
-      .populate('movie')
       .populate('theatre');
     
     if (show) {
