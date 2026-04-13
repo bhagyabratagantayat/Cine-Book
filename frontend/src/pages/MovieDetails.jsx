@@ -76,7 +76,7 @@ const MovieDetails = () => {
       <Navbar />
       
       {/* Movie Hero Header */}
-      <div className="relative h-[45vh] w-full">
+      <div className="relative h-[35vh] md:h-[45vh] w-full">
         <img 
           src={movie?.backdropUrl} 
           className="absolute inset-0 w-full h-full object-cover opacity-30"
@@ -108,9 +108,9 @@ const MovieDetails = () => {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 mt-8 space-y-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 md:mt-8 space-y-8 md:space-y-10">
         {/* Date Selector Section */}
-        <section className="space-y-6">
+        <section className="space-y-4 md:space-y-6">
            <div className="flex items-center justify-between">
               <h2 className="text-2xl font-black uppercase italic tracking-tight flex items-center gap-3">
                  <Calendar className="w-6 h-6 text-primary" />
@@ -121,7 +121,7 @@ const MovieDetails = () => {
         </section>
 
         {/* Legend Section */}
-        <div className="flex flex-wrap gap-6 border-y border-white/5 py-6">
+        <div className="flex flex-wrap gap-4 md:gap-6 border-y border-white/5 py-4 md:py-6">
            <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-white/40">
               <div className="w-3 h-3 rounded-full border-2 border-green-500 bg-green-500/20" /> Available
            </div>
@@ -134,13 +134,13 @@ const MovieDetails = () => {
         </div>
 
         {/* Showtimes Section */}
-        <section className="space-y-8">
+        <section className="space-y-6 md:space-y-8">
            <h2 className="text-2xl font-black uppercase italic tracking-tight flex items-center gap-3">
               <Ticket className="w-6 h-6 text-primary" />
               Select Showtimes
            </h2>
            
-           <div className="grid gap-8">
+           <div className="grid gap-6 md:gap-8">
               {theatres.length > 0 ? theatres.map((t) => (
                 <motion.div 
                   initial={{ opacity: 0, y: 20 }}
