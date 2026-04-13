@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { QRCodeSVG } from 'qrcode.react';
+import { QRCodeCanvas } from 'qrcode.react'; // Switching to Canvas for better compatibility
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import Navbar from '../components/Navbar';
@@ -20,7 +20,7 @@ const Ticket = () => {
   useEffect(() => {
     const fetchBooking = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/bookings/${bookingId}`);
+        const response = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/bookings/${bookingId}`);
         setBooking(response.data);
       } catch (error) {
         console.error('Fetch booking error:', error);
@@ -40,10 +40,17 @@ const Ticket = () => {
 
     try {
       const canvas = await html2canvas(ticketRef.current, {
-        scale: 2, // High quality
+        scale: 3, // Increased scale for better resolution
         useCORS: true,
-        backgroundColor: '#1A1A1A', // Match ticket background
-        logging: false,
+        backgroundColor: '#1A1A1A',
+        logging: true, // Enabled logging for debugging in dev
+        onclone: (document) => {
+          // Important: Replace all Tailwind dynamic colors with hex for html2canvas compatibility
+          const elements = document.getElementsByClassName('ticket-container');
+          Array.from(elements).forEach(el => {
+            el.style.backgroundColor = '#1A1A1A';
+          });
+        }
       });
 
       const imgData = canvas.toDataURL('image/jpeg', 1.0);
@@ -53,7 +60,7 @@ const Ticket = () => {
         format: 'a4',
       });
 
-      const imgWidth = 190; // A4 width is 210, 10mm margins
+      const imgWidth = 190;
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
       
       pdf.addImage(imgData, 'JPEG', 10, 20, imgWidth, imgHeight);
@@ -97,68 +104,68 @@ const Ticket = () => {
           </div>
 
           {/* THE TICKET CARD */}
-          <div className="relative group" ref={ticketRef}>
+          <div className="relative group ticket-container" ref={ticketRef} style={{ backgroundColor: '#141414' }}>
              {/* Left/Right Punch Holes (Visual Decor) */}
-             <div className="absolute top-1/2 -left-3 -translate-y-1/2 w-6 h-6 bg-background rounded-full z-10" />
-             <div className="absolute top-1/2 -right-3 -translate-y-1/2 w-6 h-6 bg-background rounded-full z-10" />
+             <div className="absolute top-1/2 -left-3 -translate-y-1/2 w-6 h-6 rounded-full z-10" style={{ backgroundColor: '#141414' }} />
+             <div className="absolute top-1/2 -right-3 -translate-y-1/2 w-6 h-6 rounded-full z-10" style={{ backgroundColor: '#141414' }} />
 
-             <div className="bg-[#1A1A1A] rounded-[2rem] overflow-hidden border border-white/5 shadow-2xl relative">
+             <div className="rounded-[2rem] overflow-hidden border border-white/5 shadow-2xl relative" style={{ backgroundColor: '#1A1A1A' }}>
                 
                 {/* Header (Branding) */}
-                <div className="bg-primary p-1 bg-gradient-to-r from-primary to-primary/80" />
+                <div className="h-1" style={{ backgroundColor: '#E50914' }} />
 
                 <div className="p-8 space-y-10">
                    {/* Movie Info */}
                    <div className="flex justify-between items-start">
                       <div className="space-y-2 max-w-[70%]">
-                         <h2 className="text-4xl font-black italic tracking-tighter uppercase leading-none text-white">{booking.movieTitle}</h2>
-                         <div className="flex items-center gap-2 text-white/40 text-[10px] font-black uppercase tracking-[0.1em]">
-                            <span className="bg-white/10 px-2 py-0.5 rounded italic">English</span>
-                            <span className="bg-white/10 px-2 py-0.5 rounded italic whitespace-nowrap">Laser 4K</span>
+                         <h2 className="text-4xl font-black italic tracking-tighter uppercase leading-none" style={{ color: '#FFFFFF' }}>{booking.movieTitle}</h2>
+                         <div className="flex items-center gap-2" style={{ color: 'rgba(255, 255, 255, 0.4)' }}>
+                            <span className="px-2 py-0.5 rounded italic text-[10px] font-black uppercase" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}>English</span>
+                            <span className="px-2 py-0.5 rounded italic text-[10px] font-black uppercase whitespace-nowrap" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}>Laser 4K</span>
                          </div>
                       </div>
                       <div className="w-20 h-20 bg-white rounded-2xl flex items-center justify-center p-2 shadow-2xl">
-                         <QRCodeSVG value={`CINEBOOK-${booking.bookingId}`} size={64} level="H" />
+                         <QRCodeCanvas value={`CINEBOOK-${booking.bookingId}`} size={64} level="H" includeMargin={false} />
                       </div>
                    </div>
 
                    {/* Venue Details Grid */}
                    <div className="grid grid-cols-2 gap-y-8 border-y border-white/5 py-10">
                       <div className="space-y-1">
-                         <p className="flex items-center gap-2 text-[9px] font-black text-white/20 uppercase tracking-widest">
+                         <p className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest" style={{ color: 'rgba(255, 255, 255, 0.2)' }}>
                             <MapPin className="w-3 h-3" /> Location
                          </p>
-                         <p className="text-sm font-black uppercase italic text-white/80">{booking.theatreName}</p>
+                         <p className="text-sm font-black uppercase italic" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>{booking.theatreName}</p>
                       </div>
                       <div className="space-y-1 pl-4 border-l border-white/5">
-                         <p className="flex items-center gap-2 text-[9px] font-black text-white/20 uppercase tracking-widest">
+                         <p className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest" style={{ color: 'rgba(255, 255, 255, 0.2)' }}>
                             <Calendar className="w-3 h-3" /> Date
                          </p>
-                         <p className="text-sm font-black uppercase italic text-white/80">{booking.showDate}</p>
+                         <p className="text-sm font-black uppercase italic" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>{booking.showDate}</p>
                       </div>
                       <div className="space-y-1">
-                         <p className="flex items-center gap-2 text-[9px] font-black text-white/20 uppercase tracking-widest">
+                         <p className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest" style={{ color: 'rgba(255, 255, 255, 0.2)' }}>
                             <Clock className="w-3 h-3" /> Showtime
                          </p>
-                         <p className="text-sm font-black uppercase italic text-white/80">{booking.showTime}</p>
+                         <p className="text-sm font-black uppercase italic" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>{booking.showTime}</p>
                       </div>
                       <div className="space-y-1 pl-4 border-l border-white/5">
-                         <p className="flex items-center gap-2 text-[9px] font-black text-white/20 uppercase tracking-widest">
+                         <p className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest" style={{ color: 'rgba(255, 255, 255, 0.2)' }}>
                             <Armchair className="w-3 h-3" /> Seat IDs
                          </p>
-                         <p className="text-sm font-black uppercase italic text-primary">{booking.seats.join(', ')}</p>
+                         <p className="text-sm font-black uppercase italic" style={{ color: '#E50914' }}>{booking.seats.join(', ')}</p>
                       </div>
                    </div>
 
                    {/* Secondary Info */}
-                   <div className="flex justify-between items-center text-[10px] font-black text-white/20 uppercase tracking-[0.2em]">
+                   <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-[0.2em]" style={{ color: 'rgba(255, 255, 255, 0.2)' }}>
                       <div className="space-y-1">
                          <p>Booking ID</p>
-                         <p className="text-white/60 font-bold tracking-normal">{booking.bookingId}</p>
+                         <p className="tracking-normal font-bold" style={{ color: 'rgba(255, 255, 255, 0.6)' }}>{booking.bookingId}</p>
                       </div>
                       <div className="text-right space-y-1">
                          <p>Total Paid</p>
-                         <p className="text-white/60 font-bold tracking-normal">₹{booking.totalAmount}</p>
+                         <p className="tracking-normal font-bold" style={{ color: 'rgba(255, 255, 255, 0.6)' }}>₹{booking.totalAmount}</p>
                       </div>
                    </div>
                 </div>
@@ -166,16 +173,17 @@ const Ticket = () => {
                 {/* Footer Tear-off part */}
                 <div className="border-t border-dashed border-white/10 p-8 flex justify-between items-center bg-white/5">
                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary border border-primary/20">
+                      <div className="w-10 h-10 rounded-full flex items-center justify-center text-primary border border-primary/20" style={{ backgroundColor: 'rgba(229, 9, 20, 0.2)' }}>
                          <TicketIcon className="w-5 h-5" />
                       </div>
-                      <p className="text-[9px] font-black uppercase text-white/40 tracking-[0.2em] leading-tight max-w-[120px]">Scan this QR at the theatre entrance</p>
+                      <p className="text-[9px] font-black uppercase tracking-[0.2em] leading-tight max-w-[120px]" style={{ color: 'rgba(255, 255, 255, 0.4)' }}>Scan this QR at the theatre entrance</p>
                    </div>
                    <div className="flex gap-4">
                       <button 
                          onClick={handleDownloadPDF}
                          disabled={isDownloading}
-                         className={`bg-white/5 p-3 rounded-xl border border-white/10 hover:bg-white/10 transition-all text-white/60 flex items-center gap-2 min-w-[140px] justify-center ${isDownloading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                         className={`p-3 rounded-xl border transition-all text-white/60 flex items-center gap-2 min-w-[140px] justify-center ${isDownloading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                         style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)', borderColor: 'rgba(255, 255, 255, 0.1)' }}
                       >
                          {isDownloading ? (
                            <Loader2 className="w-5 h-5 animate-spin" />
@@ -186,7 +194,7 @@ const Ticket = () => {
                            {isDownloading ? 'Generating...' : 'Download PDF'}
                          </span>
                       </button>
-                      <button className="bg-white/5 p-3 rounded-xl border border-white/10 hover:bg-white/10 transition-all text-white/60">
+                      <button className="p-3 rounded-xl border hover:bg-white/10 transition-all text-white/60" style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)', borderColor: 'rgba(255, 255, 255, 0.1)' }}>
                          <Share2 className="w-5 h-5" />
                       </button>
                    </div>
@@ -194,7 +202,7 @@ const Ticket = () => {
              </div>
           </div>
 
-          <p className="text-center text-[10px] font-bold text-white/20 uppercase tracking-[0.2em]">
+          <p className="text-center text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: 'rgba(255, 255, 255, 0.2)' }}>
              Please arrive 15 minutes before the show starts
           </p>
         </motion.div>

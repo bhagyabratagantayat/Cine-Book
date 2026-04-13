@@ -21,8 +21,8 @@ const MovieDetails = () => {
       setLoading(true);
       try {
         const [movieRes, showsRes] = await Promise.all([
-          axios.get(`http://localhost:5000/api/movies/${id}`),
-          axios.get(`http://localhost:5000/api/shows/movie/${id}?date=${selectedDate}`)
+          axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/movies/${id}`),
+          axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/shows/movie/${id}?date=${selectedDate}`)
         ]);
         setMovie(movieRes.data);
         

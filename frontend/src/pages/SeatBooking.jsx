@@ -20,7 +20,7 @@ const SeatBooking = () => {
   useEffect(() => {
     const fetchShow = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/shows/${showId}`);
+        const response = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/shows/${showId}`);
         setShow(response.data);
         
         const initialLocked = {};

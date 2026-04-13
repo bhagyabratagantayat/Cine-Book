@@ -16,7 +16,7 @@ const Home = () => {
     const fetchMovies = async () => {
       setLoading(true);
       try {
-        const response = await axios.get(`http://localhost:5000/api/movies?search=${searchTerm}&category=${category}`);
+        const response = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/movies?search=${searchTerm}&category=${category}`);
         setMovies(response.data);
       } catch (error) {
         console.error('Error fetching movies:', error);
@@ -40,48 +40,47 @@ const Home = () => {
       <Navbar />
       
       {/* Hero Banner (Simplified for standalone) */}
-      <div className="relative h-[65vh] w-full overflow-hidden">
+      <div className="relative h-[50vh] w-full overflow-hidden">
         <img 
           src="https://image.tmdb.org/t/p/original/m99O3Jshn120yL1O7aD0sCD32eK.jpg" 
           alt="Hero"
-          className="absolute inset-0 h-full w-full object-cover"
+          className="absolute inset-0 h-full w-full object-cover opacity-30"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-background via-background/60 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-background via-background/40 to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
         
-        <div className="relative h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col justify-center">
-          <div className="max-w-2xl space-y-6">
-            <h1 className="text-6xl md:text-8xl font-black tracking-tighter leading-none italic uppercase">
+        <div className="relative h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col pt-24">
+          <div className="max-w-2xl space-y-4">
+            <h1 className="text-5xl md:text-8xl font-black tracking-tighter leading-none italic uppercase">
               Cine<span className="text-primary tracking-tight">Book</span>
             </h1>
-            <p className="text-white/60 text-lg line-clamp-2 font-medium leading-relaxed max-w-xl">
+            <p className="text-white/60 text-sm md:text-lg line-clamp-2 font-medium leading-relaxed max-w-xl">
               Stream 100+ latest blockbusters. Exclusive Bollywood & Hollywood hits. 
-              No subscription required.
             </p>
             <div className="flex items-center bg-white/5 border border-white/10 rounded-2xl p-2 w-full max-w-md focus-within:bg-white/10 transition-all shadow-2xl">
               <Search className="w-5 h-5 text-white/40 ml-2" />
               <input 
                 type="text" 
-                placeholder="Search 100+ movies..."
+                placeholder="Search movies..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="bg-transparent border-none focus:ring-0 text-md placeholder:text-white/30 ml-2 w-full"
+                className="bg-transparent border-none focus:ring-0 text-sm placeholder:text-white/30 ml-2 w-full"
               />
             </div>
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
         
         {/* Filter Section */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-white/5 pb-8">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/5 pb-6">
            <div className="space-y-1">
-              <h2 className="text-3xl font-black tracking-tight uppercase italic flex items-center gap-3">
-                <span className="w-2 h-8 bg-primary rounded-full" />
+              <h2 className="text-2xl font-black tracking-tight uppercase italic flex items-center gap-2">
+                <span className="w-1.5 h-6 bg-primary rounded-full" />
                 Featured Movies
               </h2>
-              <p className="text-white/30 font-medium">Showing {movies.length} blockbusters</p>
+              <p className="text-white/30 text-xs font-bold uppercase tracking-widest">Showing {movies.length} blockbusters</p>
            </div>
            
            <div className="flex bg-white/5 p-1 rounded-xl border border-white/10">
@@ -89,7 +88,7 @@ const Home = () => {
                 <button
                   key={cat}
                   onClick={() => setCategory(cat)}
-                  className={`px-6 py-2 rounded-lg text-sm font-black transition-all ${
+                  className={`px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${
                     category === cat 
                       ? 'bg-primary text-white shadow-lg shadow-primary/20' 
                       : 'text-white/40 hover:text-white'
@@ -108,9 +107,8 @@ const Home = () => {
           ) : (
             <motion.div 
               key="grid"
-              initial={{ opacity: 0 }}
+              initial={{ opacity: 1 }} // Force visibility for now
               animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
               className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8"
             >
               {movies.length > 0 ? (

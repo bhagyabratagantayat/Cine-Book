@@ -29,7 +29,7 @@ const Summary = () => {
       const paymentId = 'PAY' + Math.random().toString(36).substr(2, 9).toUpperCase();
       
       // 2. Persist Booking to Backend
-      const response = await axios.post('http://localhost:5000/api/bookings', {
+      const response = await axios.post((import.meta.env.VITE_API_URL || 'http://localhost:5000') + '/api/bookings', {
         showId: showId,
         movieId: movie?._id,
         movieTitle: movie?.title,
