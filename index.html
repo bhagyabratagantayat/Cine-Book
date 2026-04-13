@@ -1,1 +1,721 @@
-hello i am pilu
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',system-ui,sans-serif;}
+:root{
+--bg:#141414;--surface:#1f1f1f;--surface2:#2a2a2a;--surface3:#333;
+--red:#E50914;--red2:#f40612;
+--text:#ffffff;--text2:#e5e5e5;--text3:#b3b3b3;--text4:#808080;
+--green:#46d369;--gold:#f5c518;
+--purple:#7C3AED;--purple2:#a78bfa;
+--border:#333;
+}
+.app{background:var(--bg);color:var(--text);min-height:700px;display:flex;flex-direction:column;}
+.page{display:none;flex:1;}
+.page.active{display:flex;flex-direction:column;}
+
+/* NAV */
+.topbar{background:#000;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #222;}
+.logo{font-size:22px;font-weight:900;color:var(--red);letter-spacing:-1px;text-transform:uppercase;}
+.logo span{color:#fff;}
+.topbar-right{display:flex;align-items:center;gap:12px;}
+.city-tag{font-size:12px;color:var(--text3);background:var(--surface2);padding:5px 12px;border-radius:20px;border:1px solid var(--border);}
+.notif-btn{width:32px;height:32px;background:var(--surface2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;}
+
+/* CONTENT AREA */
+.content{flex:1;overflow-y:auto;padding-bottom:70px;}
+
+/* HERO BANNER */
+.hero{background:#1a0a0a;padding:28px 20px 20px;margin-bottom:4px;position:relative;}
+.hero-eyebrow{font-size:11px;font-weight:700;color:var(--red);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;}
+.hero-title{font-size:28px;font-weight:900;color:#fff;line-height:1.15;margin-bottom:8px;}
+.hero-meta{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap;}
+.hero-rating{background:var(--green);color:#000;font-size:11px;font-weight:800;padding:3px 8px;border-radius:4px;}
+.hero-match{font-size:13px;color:var(--green);font-weight:700;}
+.hero-info{font-size:12px;color:var(--text3);}
+.hero-desc{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:16px;max-width:500px;}
+.hero-btns{display:flex;gap:10px;}
+.btn-play{background:#fff;color:#000;border:none;padding:10px 22px;border-radius:6px;font-size:14px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:6px;}
+.btn-book{background:rgba(109,109,110,0.7);color:#fff;border:none;padding:10px 22px;border-radius:6px;font-size:14px;font-weight:700;cursor:pointer;}
+.btn-play:active,.btn-book:active{opacity:0.85;}
+
+/* SECTION */
+.section{padding:16px 20px;}
+.section-head{font-size:15px;font-weight:700;color:var(--text);margin-bottom:12px;}
+.section-head span{font-size:12px;font-weight:400;color:var(--red);margin-left:8px;cursor:pointer;}
+
+/* MOVIE ROW */
+.movie-row{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px;scrollbar-width:none;}
+.movie-row::-webkit-scrollbar{display:none;}
+.movie-thumb{min-width:120px;cursor:pointer;flex-shrink:0;}
+.movie-thumb:active{opacity:0.8;}
+.thumb-img{height:170px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:44px;margin-bottom:6px;position:relative;overflow:hidden;}
+.thumb-badge{position:absolute;top:6px;left:6px;font-size:9px;font-weight:800;padding:2px 6px;border-radius:3px;text-transform:uppercase;}
+.badge-new{background:var(--red);color:#fff;}
+.badge-hot{background:var(--gold);color:#000;}
+.thumb-title{font-size:12px;font-weight:600;color:var(--text);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.thumb-sub{font-size:11px;color:var(--text3);}
+
+/* CATEGORIES */
+.cats{display:flex;gap:8px;overflow-x:auto;padding:0 20px 16px;scrollbar-width:none;}
+.cats::-webkit-scrollbar{display:none;}
+.cat{padding:7px 16px;border-radius:4px;border:1px solid var(--border);font-size:13px;font-weight:600;color:var(--text2);cursor:pointer;white-space:nowrap;background:var(--surface);}
+.cat.active{background:var(--red);border-color:var(--red);color:#fff;}
+
+/* SEARCH */
+.search-wrap{padding:16px 20px 8px;}
+.search-box{display:flex;align-items:center;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;gap:10px;}
+.search-box input{background:none;border:none;outline:none;color:var(--text);flex:1;font-size:14px;}
+.search-box input::placeholder{color:var(--text4);}
+.search-icon{color:var(--text3);font-size:16px;}
+
+/* BACK */
+.back-row{display:flex;align-items:center;gap:8px;padding:14px 20px 0;cursor:pointer;}
+.back-btn{font-size:13px;font-weight:600;color:var(--text2);}
+.back-arrow{font-size:18px;color:var(--text3);}
+
+/* DETAIL PAGE */
+.detail-hero{padding:20px;background:var(--surface);margin:12px 16px;border-radius:12px;display:flex;gap:16px;}
+.detail-emoji{font-size:72px;line-height:1;flex-shrink:0;}
+.detail-info h2{font-size:20px;font-weight:900;color:var(--text);margin-bottom:6px;}
+.detail-meta-row{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;}
+.dmeta{font-size:12px;color:var(--text3);}
+.dtag{font-size:11px;color:var(--text3);background:var(--surface2);padding:3px 8px;border-radius:3px;border:1px solid var(--border);}
+.detail-rating{background:var(--green);color:#000;font-weight:800;font-size:13px;padding:3px 8px;border-radius:4px;}
+.synopsis-box{margin:0 16px 16px;background:var(--surface);border-radius:10px;padding:14px;}
+.synopsis-box p{font-size:13px;color:var(--text2);line-height:1.7;}
+.cast-row{display:flex;gap:10px;overflow-x:auto;padding:0 20px 16px;scrollbar-width:none;}
+.cast-row::-webkit-scrollbar{display:none;}
+.cast-item{text-align:center;min-width:60px;}
+.cast-avatar{width:50px;height:50px;border-radius:50%;background:var(--surface2);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:20px;margin:0 auto 5px;}
+.cast-name{font-size:10px;color:var(--text3);white-space:nowrap;}
+
+/* THEATRE PAGE */
+.date-strip{display:flex;gap:8px;overflow-x:auto;padding:12px 20px;scrollbar-width:none;}
+.date-strip::-webkit-scrollbar{display:none;}
+.date-pill{min-width:50px;text-align:center;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px 6px;cursor:pointer;flex-shrink:0;}
+.date-pill.active{background:var(--red);border-color:var(--red);}
+.dp-day{font-size:10px;color:var(--text3);margin-bottom:2px;font-weight:600;text-transform:uppercase;}
+.date-pill.active .dp-day{color:rgba(255,255,255,0.8);}
+.dp-num{font-size:17px;font-weight:800;color:var(--text);}
+.theatre-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;margin:0 16px 12px;cursor:pointer;}
+.th-name{font-size:15px;font-weight:700;color:var(--text);margin-bottom:4px;}
+.th-meta{font-size:12px;color:var(--text3);margin-bottom:12px;display:flex;gap:12px;}
+.th-badge{font-size:10px;font-weight:700;padding:3px 8px;border-radius:3px;margin-right:4px;background:rgba(229,9,20,0.15);color:#f87171;border:1px solid rgba(229,9,20,0.3);}
+.showtime-row{display:flex;gap:8px;flex-wrap:wrap;}
+.showtime-btn{padding:7px 14px;border:1px solid var(--green);border-radius:6px;font-size:12px;font-weight:700;color:var(--green);cursor:pointer;background:rgba(70,211,105,0.05);transition:all 0.15s;}
+.showtime-btn.sel,.showtime-btn:active{background:var(--green);color:#000;}
+
+/* SEAT PAGE */
+.seat-page-header{padding:16px 20px 8px;text-align:center;}
+.seat-page-header h3{font-size:16px;font-weight:800;color:var(--text);margin-bottom:2px;}
+.seat-page-header p{font-size:12px;color:var(--text3);}
+.auto-btn{display:block;width:calc(100% - 40px);margin:0 20px 16px;padding:11px;background:rgba(124,58,237,0.15);border:1px dashed #7C3AED;color:var(--purple2);border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;}
+.screen-label{text-align:center;margin:0 30px 20px;padding:8px;border-top:3px solid #555;border-radius:50%;font-size:11px;font-weight:700;color:var(--text3);letter-spacing:2px;text-transform:uppercase;}
+.seat-section{padding:0 16px;margin-bottom:14px;}
+.row-label{font-size:11px;font-weight:700;color:var(--text3);margin-bottom:6px;display:flex;justify-content:space-between;}
+.row-label span:last-child{color:var(--text4);}
+.seat-grid{display:grid;gap:5px;justify-content:center;}
+.seat{width:28px;height:26px;border-radius:5px 5px 3px 3px;border:none;cursor:pointer;font-size:9px;font-weight:700;color:#fff;transition:transform 0.12s;}
+.seat:active{transform:scale(0.88);}
+.seat.avail{background:#1e3a5f;border:1px solid #3b82f6;color:#93c5fd;}
+.seat.selected{background:var(--purple);border:1px solid var(--purple2);transform:scale(1.12);color:#fff;}
+.seat.booked{background:#2a2a2a;border:1px solid #444;color:#555;cursor:not-allowed;}
+.seat.vip{background:#3d2700;border:1px solid #f59e0b;color:#fbbf24;}
+.seat.vip.selected{background:#f59e0b;color:#000;}
+.seat-legend{display:flex;gap:16px;justify-content:center;padding:12px 0;flex-wrap:wrap;}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:var(--text3);}
+.ldot{width:14px;height:13px;border-radius:3px;}
+.seat-footer{background:#000;border-top:1px solid #222;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;}
+.sf-seats{font-size:12px;color:var(--text3);margin-bottom:2px;}
+.sf-price{font-size:19px;font-weight:900;color:var(--green);}
+.continue-btn{background:var(--red);color:#fff;border:none;padding:12px 24px;border-radius:8px;font-size:14px;font-weight:800;cursor:pointer;}
+.continue-btn:active{opacity:0.85;}
+.sf-hidden{display:none;}
+
+/* SUMMARY PAGE */
+.summary-hero{background:var(--surface);margin:12px 16px;border-radius:12px;padding:16px;display:flex;gap:14px;align-items:center;}
+.sh-emoji{font-size:52px;flex-shrink:0;}
+.sh-title{font-size:17px;font-weight:800;color:var(--text);margin-bottom:4px;}
+.sh-sub{font-size:12px;color:var(--text3);}
+.info-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;margin:0 16px 12px;overflow:hidden;}
+.ic-head{font-size:10px;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:1px;padding:10px 14px 6px;border-bottom:1px solid var(--border);}
+.ic-row{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid var(--border);}
+.ic-row:last-child{border:none;}
+.ic-label{font-size:13px;color:var(--text3);}
+.ic-val{font-size:13px;font-weight:700;color:var(--text);text-align:right;max-width:55%;}
+.ic-row.total{background:rgba(70,211,105,0.06);}
+.ic-row.total .ic-label{font-size:14px;font-weight:800;color:var(--text);}
+.ic-row.total .ic-val{font-size:16px;font-weight:900;color:var(--green);}
+
+/* PAYMENT */
+.pay-amount-box{background:var(--surface);margin:12px 16px;border-radius:10px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;border:1px solid var(--border);}
+.pa-label{font-size:12px;color:var(--text3);margin-bottom:2px;}
+.pa-amount{font-size:22px;font-weight:900;color:var(--green);}
+.pay-tabs{display:flex;gap:0;margin:0 16px 16px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:3px;}
+.pay-tab{flex:1;padding:9px;text-align:center;font-size:13px;font-weight:700;border-radius:6px;cursor:pointer;color:var(--text3);}
+.pay-tab.active{background:var(--red);color:#fff;}
+.pay-section{padding:0 16px;}
+.pay-label{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;}
+.pay-input{width:100%;padding:12px 14px;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:14px;margin-bottom:12px;outline:none;}
+.pay-input::placeholder{color:var(--text4);}
+.pay-input:focus{border-color:var(--red);}
+.wallet-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;}
+.wallet-item{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 8px;text-align:center;cursor:pointer;}
+.wallet-item.active{border-color:var(--green);background:rgba(70,211,105,0.06);}
+.wi-icon{font-size:22px;display:block;margin-bottom:4px;}
+.wi-name{font-size:11px;font-weight:600;color:var(--text2);}
+
+/* SUCCESS */
+.success-wrap{text-align:center;padding:30px 20px;}
+.success-icon{font-size:64px;margin-bottom:12px;}
+.success-title{font-size:22px;font-weight:900;color:var(--text);margin-bottom:4px;}
+.success-sub{font-size:13px;color:var(--text3);margin-bottom:20px;}
+.ticket{background:var(--surface);border:1px solid #444;border-radius:16px;padding:18px;margin:0 0 20px;text-align:left;position:relative;}
+.ticket-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;}
+.t-movie{font-size:17px;font-weight:900;color:var(--text);}
+.t-sub{font-size:12px;color:var(--text3);margin-top:2px;}
+.t-emoji{font-size:40px;}
+.ticket-div{border-top:1px dashed #444;margin:14px -4px;position:relative;}
+.ticket-div::before{content:'';position:absolute;left:-14px;top:-9px;width:16px;height:16px;background:var(--bg);border-radius:50%;border-right:1px dashed #444;}
+.ticket-div::after{content:'';position:absolute;right:-14px;top:-9px;width:16px;height:16px;background:var(--bg);border-radius:50%;border-left:1px dashed #444;}
+.ticket-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.tg-item label{font-size:10px;font-weight:700;color:var(--text4);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:2px;}
+.tg-item span{font-size:13px;font-weight:700;color:var(--text);}
+.qr-box{background:var(--surface2);border-radius:10px;padding:12px;text-align:center;}
+.qr-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:3px;width:80px;margin:0 auto 6px;}
+.qr-cell{aspect-ratio:1;border-radius:2px;}
+.qr-label{font-size:10px;color:var(--text4);}
+.booking-id{display:inline-block;background:rgba(124,58,237,0.15);border:1px solid rgba(124,58,237,0.4);color:var(--purple2);font-size:12px;font-weight:700;padding:4px 12px;border-radius:4px;margin-bottom:14px;}
+
+/* BOTTOM NAV */
+.bottom-nav{background:#000;border-top:1px solid #222;display:flex;z-index:100;}
+.bnav-item{flex:1;padding:10px 0 8px;text-align:center;cursor:pointer;}
+.bnav-icon{font-size:18px;display:block;margin-bottom:2px;}
+.bnav-label{font-size:10px;font-weight:600;color:var(--text4);}
+.bnav-item.active .bnav-label{color:var(--red);}
+.bnav-item.active .bnav-icon{filter:drop-shadow(0 0 4px rgba(229,9,20,0.6));}
+
+.pay-hidden{display:none;}
+.spacer{height:20px;}
+</style>
+
+<h2 style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);">CineBook — Movie ticket booking app for Bhubaneswar</h2>
+
+<div class="app" id="app">
+
+<!-- ═══════════ HOME ═══════════ -->
+<div class="page active" id="pg-home">
+  <div class="topbar">
+    <div class="logo">Cine<span>Book</span></div>
+    <div class="topbar-right">
+      <div class="city-tag">📍 Bhubaneswar</div>
+      <div class="notif-btn">🔔</div>
+    </div>
+  </div>
+  <div class="content">
+    <div class="search-wrap">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" placeholder="Search movies, cinemas, events..." />
+      </div>
+    </div>
+    <div class="cats">
+      <div class="cat active">Movies</div>
+      <div class="cat">Events</div>
+      <div class="cat">Plays</div>
+      <div class="cat">Sports</div>
+      <div class="cat">Comedy</div>
+    </div>
+    <div id="heroSection"></div>
+    <div class="section">
+      <div class="section-head">Now Showing <span>See all</span></div>
+      <div class="movie-row" id="nowShowingRow"></div>
+    </div>
+    <div class="section">
+      <div class="section-head">Trending in Bhubaneswar <span>See all</span></div>
+      <div class="movie-row" id="trendingRow"></div>
+    </div>
+    <div class="spacer"></div>
+  </div>
+  <div class="bottom-nav">
+    <div class="bnav-item active"><span class="bnav-icon">🏠</span><span class="bnav-label">Home</span></div>
+    <div class="bnav-item"><span class="bnav-icon">🔍</span><span class="bnav-label">Search</span></div>
+    <div class="bnav-item"><span class="bnav-icon">🎫</span><span class="bnav-label">Tickets</span></div>
+    <div class="bnav-item"><span class="bnav-icon">👤</span><span class="bnav-label">Profile</span></div>
+  </div>
+</div>
+
+<!-- ═══════════ DETAIL ═══════════ -->
+<div class="page" id="pg-detail">
+  <div class="topbar">
+    <div class="back-row" onclick="goTo('home')" style="padding:0;">
+      <span class="back-arrow">←</span>
+      <div class="logo" style="font-size:18px;">Cine<span>Book</span></div>
+    </div>
+    <div class="city-tag">📍 Bhubaneswar</div>
+  </div>
+  <div class="content">
+    <div id="detailHero" style="margin:14px 16px;"></div>
+    <div class="synopsis-box"><p id="detailSynopsis"></p></div>
+    <div class="section" style="padding-bottom:4px;"><div class="section-head">Cast</div></div>
+    <div class="cast-row" id="castRow"></div>
+    <div style="padding:4px 16px 16px;">
+      <button class="continue-btn" style="width:100%;font-size:15px;padding:14px;" onclick="goTo('theatre')">🎬 Book Tickets</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ THEATRE ═══════════ -->
+<div class="page" id="pg-theatre">
+  <div class="topbar">
+    <div class="back-row" onclick="goTo('detail')" style="padding:0;gap:6px;">
+      <span class="back-arrow">←</span>
+      <span style="font-size:14px;font-weight:700;color:var(--text);" id="theatrePageTitle">Select Theatre</span>
+    </div>
+  </div>
+  <div class="content">
+    <div class="date-strip" id="dateStrip"></div>
+    <div id="theatreList"></div>
+    <div class="spacer"></div>
+  </div>
+</div>
+
+<!-- ═══════════ SEAT ═══════════ -->
+<div class="page" id="pg-seat">
+  <div class="topbar">
+    <div class="back-row" onclick="goTo('theatre')" style="padding:0;gap:6px;">
+      <span class="back-arrow">←</span>
+      <span style="font-size:13px;font-weight:600;color:var(--text2);">Select Seats</span>
+    </div>
+  </div>
+  <div class="content" id="seatContent">
+    <div class="seat-page-header">
+      <h3 id="seatTitle"></h3>
+      <p id="seatSubtitle"></p>
+    </div>
+    <button class="auto-btn" onclick="autoSuggest()">✨ Auto Best Seat Suggestion</button>
+    <div class="screen-label">SCREEN</div>
+    <div id="seatMap"></div>
+    <div class="seat-legend">
+      <div class="legend-item"><div class="ldot" style="background:#1e3a5f;border:1px solid #3b82f6;"></div><span>Available</span></div>
+      <div class="legend-item"><div class="ldot" style="background:var(--purple);"></div><span>Selected</span></div>
+      <div class="legend-item"><div class="ldot" style="background:#2a2a2a;border:1px solid #444;"></div><span>Booked</span></div>
+      <div class="legend-item"><div class="ldot" style="background:#3d2700;border:1px solid #f59e0b;"></div><span>VIP</span></div>
+    </div>
+    <div style="height:80px;"></div>
+  </div>
+  <div class="seat-footer sf-hidden" id="seatFooter">
+    <div>
+      <div class="sf-seats" id="sfSeats">No seats selected</div>
+      <div class="sf-price" id="sfPrice">₹0</div>
+    </div>
+    <button class="continue-btn" onclick="goTo('summary')">Continue →</button>
+  </div>
+</div>
+
+<!-- ═══════════ SUMMARY ═══════════ -->
+<div class="page" id="pg-summary">
+  <div class="topbar">
+    <div class="back-row" onclick="goTo('seat')" style="padding:0;gap:6px;">
+      <span class="back-arrow">←</span>
+      <span style="font-size:14px;font-weight:700;color:var(--text);">Booking Summary</span>
+    </div>
+  </div>
+  <div class="content">
+    <div class="summary-hero">
+      <div class="sh-emoji" id="shEmoji"></div>
+      <div><div class="sh-title" id="shTitle"></div><div class="sh-sub" id="shSub"></div></div>
+    </div>
+    <div class="info-card">
+      <div class="ic-head">Booking Details</div>
+      <div class="ic-row"><span class="ic-label">Theatre</span><span class="ic-val" id="icTheatre"></span></div>
+      <div class="ic-row"><span class="ic-label">Date & Time</span><span class="ic-val" id="icTime"></span></div>
+      <div class="ic-row"><span class="ic-label">Seats</span><span class="ic-val" id="icSeats"></span></div>
+    </div>
+    <div class="info-card">
+      <div class="ic-head">Price Breakdown</div>
+      <div class="ic-row"><span class="ic-label" id="icTicketLbl">Tickets</span><span class="ic-val" id="icTicketAmt"></span></div>
+      <div class="ic-row"><span class="ic-label">Convenience Fee (10%)</span><span class="ic-val" id="icFee"></span></div>
+      <div class="ic-row total"><span class="ic-label">Total Payable</span><span class="ic-val" id="icTotal"></span></div>
+    </div>
+    <div style="padding:0 16px 20px;">
+      <button class="continue-btn" style="width:100%;font-size:15px;padding:14px;" onclick="goTo('payment')">Proceed to Payment →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ PAYMENT ═══════════ -->
+<div class="page" id="pg-payment">
+  <div class="topbar">
+    <div class="back-row" onclick="goTo('summary')" style="padding:0;gap:6px;">
+      <span class="back-arrow">←</span>
+      <span style="font-size:14px;font-weight:700;color:var(--text);">Payment</span>
+    </div>
+  </div>
+  <div class="content">
+    <div class="pay-amount-box">
+      <div><div class="pa-label">Total Amount Payable</div><div class="pa-amount" id="payAmt"></div></div>
+      <div style="font-size:11px;font-weight:700;color:var(--green);background:rgba(70,211,105,0.1);padding:6px 10px;border-radius:6px;">SECURE</div>
+    </div>
+    <div class="pay-tabs">
+      <div class="pay-tab active" onclick="switchPay('upi',this)">UPI</div>
+      <div class="pay-tab" onclick="switchPay('card',this)">Card</div>
+      <div class="pay-tab" onclick="switchPay('wallet',this)">Wallet</div>
+    </div>
+    <div class="pay-section" id="payUPI">
+      <div class="pay-label">Enter UPI ID</div>
+      <input class="pay-input" type="text" placeholder="yourname@okaxis / @ybl / @paytm" />
+      <div class="pay-label">Quick Pay via App</div>
+      <div class="wallet-grid">
+        <div class="wallet-item" onclick="selectWallet(this)"><span class="wi-icon">📱</span><span class="wi-name">PhonePe</span></div>
+        <div class="wallet-item" onclick="selectWallet(this)"><span class="wi-icon">💙</span><span class="wi-name">GPay</span></div>
+        <div class="wallet-item" onclick="selectWallet(this)"><span class="wi-icon">🔵</span><span class="wi-name">Paytm</span></div>
+        <div class="wallet-item" onclick="selectWallet(this)"><span class="wi-icon">🅰️</span><span class="wi-name">Amazon Pay</span></div>
+        <div class="wallet-item" onclick="selectWallet(this)"><span class="wi-icon">🏦</span><span class="wi-name">BHIM</span></div>
+        <div class="wallet-item" onclick="selectWallet(this)"><span class="wi-icon">💰</span><span class="wi-name">Cred</span></div>
+      </div>
+    </div>
+    <div class="pay-section pay-hidden" id="payCard">
+      <div class="pay-label">Card Number</div>
+      <input class="pay-input" type="text" placeholder="0000  0000  0000  0000" maxlength="19" />
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div><div class="pay-label">Expiry</div><input class="pay-input" type="text" placeholder="MM / YY" /></div>
+        <div><div class="pay-label">CVV</div><input class="pay-input" type="text" placeholder="•••" maxlength="3" /></div>
+      </div>
+      <div class="pay-label">Name on Card</div>
+      <input class="pay-input" type="text" placeholder="As on card" />
+    </div>
+    <div class="pay-section pay-hidden" id="payWallet">
+      <div class="pay-label">Select Wallet</div>
+      <div class="wallet-grid">
+        <div class="wallet-item" onclick="selectWallet(this)"><span class="wi-icon">💳</span><span class="wi-name">MobiKwik</span></div>
+        <div class="wallet-item" onclick="selectWallet(this)"><span class="wi-icon">🟠</span><span class="wi-name">Ola Money</span></div>
+        <div class="wallet-item" onclick="selectWallet(this)"><span class="wi-icon">🌐</span><span class="wi-name">Airtel Pay</span></div>
+      </div>
+    </div>
+    <div style="padding:4px 16px 20px;">
+      <button class="continue-btn" style="width:100%;font-size:15px;padding:14px;" onclick="doPayment()">Pay Now 🔒</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ SUCCESS ═══════════ -->
+<div class="page" id="pg-success">
+  <div class="topbar"><div class="logo">Cine<span>Book</span></div></div>
+  <div class="content">
+    <div class="success-wrap">
+      <div class="success-icon">🎉</div>
+      <div class="success-title">Booking Confirmed!</div>
+      <div class="success-sub">Your e-ticket is ready. Enjoy the show!</div>
+      <div class="booking-id" id="bookingId">#CBB000000</div>
+      <div class="ticket">
+        <div class="ticket-top">
+          <div><div class="t-movie" id="tMovie"></div><div class="t-sub" id="tSub"></div></div>
+          <div class="t-emoji" id="tEmoji"></div>
+        </div>
+        <div class="ticket-grid">
+          <div class="tg-item"><label>Theatre</label><span id="tTheatre"></span></div>
+          <div class="tg-item"><label>Seats</label><span id="tSeats"></span></div>
+          <div class="tg-item"><label>Date</label><span id="tDate"></span></div>
+          <div class="tg-item"><label>Show Time</label><span id="tTime"></span></div>
+        </div>
+        <div class="ticket-div"></div>
+        <div class="qr-box">
+          <div class="qr-grid" id="qrGrid"></div>
+          <div class="qr-label">Scan at theatre entry</div>
+        </div>
+      </div>
+      <button class="continue-btn" style="width:100%;font-size:14px;padding:13px;" onclick="resetApp()">Book More Tickets</button>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+const MOVIES=[
+  {id:1,emoji:'🔥',title:'Pushpa 2',genre:'Action / Thriller',lang:'Telugu • Hindi',dur:'3h 20m',rating:'8.4',col:'#3b0000',synopsis:'Pushpa Raj returns with even more power, taking on the red sandalwood mafia and law enforcement in this explosive sequel. Bigger action. Bigger drama.',cast:['Allu Arjun','Rashmika M','Fahadh F','Sunil'],price:200,badge:'HOT'},
+  {id:2,emoji:'⚡',title:'Kalki 2898 AD',genre:'Sci-Fi / Fantasy',lang:'Telugu • Hindi',dur:'3h 1m',rating:'7.8',col:'#0a0a2e',synopsis:'Set in a dystopian future, this mythological sci-fi saga follows the 10th avatar of Vishnu in 2898 AD. An unprecedented cinematic experience.',cast:['Prabhas','Deepika P','Amitabh B','Kamal Haasan'],price:250,badge:'NEW'},
+  {id:3,emoji:'👻',title:'Stree 2',genre:'Horror / Comedy',lang:'Hindi',dur:'2h 15m',rating:'8.1',col:'#0a1f0a',synopsis:'Stree returns to haunt Chanderi. The gang must reunite to stop the supernatural menace once again — funnier, scarier and bigger than ever.',cast:['Shraddha K','Rajkummar R','Pankaj T','Aparshakti'],price:160},
+  {id:4,emoji:'🌊',title:'Devara',genre:'Action / Drama',lang:'Telugu • Hindi',dur:'2h 56m',rating:'7.5',col:'#001a2e',synopsis:'A seafaring tale of a fearless leader and his son spanning decades of power, betrayal and redemption. Jr NTR in a career-defining dual role.',cast:['Jr NTR','Saif Ali Khan','Janhvi Kapoor'],price:220,badge:'NEW'},
+  {id:5,emoji:'👊',title:'Singham Again',genre:'Action',lang:'Hindi',dur:'2h 42m',rating:'7.2',col:'#1a1000',synopsis:'Bajirao Singham returns to take on a powerful crime lord threatening the city. The ultimate cop drama packed with raw action and emotion.',cast:['Ajay Devgn','Kareena K','Deepika P','Tiger Shroff'],price:180},
+  {id:6,emoji:'🎭',title:'Game Changer',genre:'Political Drama',lang:'Telugu • Hindi',dur:'2h 47m',rating:'6.9',col:'#150028',synopsis:'A fearless IAS officer battles deep-rooted corruption armed only with his integrity. Ram Charan leads this high-voltage political thriller.',cast:['Ram Charan','Kiara Advani','SJ Suryah','Anjali'],price:190,badge:'HOT'},
+];
+
+const THEATRES=[
+  {name:'Inox Esplanade Mall',area:'Rasulgarh',dist:'3.2 km',rating:'4.4',times:['10:00 AM','1:30 PM','5:00 PM','9:15 PM'],badges:['IMAX','4DX']},
+  {name:'Cinepolis Forum Mart',area:'Patia',dist:'5.1 km',rating:'4.2',times:['9:30 AM','12:45 PM','4:00 PM','7:30 PM','10:45 PM'],badges:['3D']},
+  {name:'Sarath City Capital Mall',area:'Janpath',dist:'1.8 km',rating:'4.0',times:['11:00 AM','2:30 PM','6:00 PM','9:00 PM'],badges:[]},
+  {name:'Big Cinemas Keshari',area:'Keshari Nagar',dist:'7.3 km',rating:'3.8',times:['10:30 AM','3:00 PM','7:00 PM'],badges:[]},
+  {name:'Swati Cinema',area:'Saheed Nagar',dist:'4.5 km',rating:'3.5',times:['11:30 AM','3:30 PM','7:30 PM'],badges:['3D']},
+  {name:'PVRL Cinemas BMC',area:'BMC Bhawani Mall',dist:'2.9 km',rating:'4.3',times:['9:00 AM','12:00 PM','3:30 PM','6:45 PM','10:00 PM'],badges:['IMAX']},
+];
+
+const ROWS=[
+  {label:'A',count:8,type:'vip',extra:100},
+  {label:'B',count:8,type:'vip',extra:100},
+  {label:'C',count:10,type:'normal',extra:0},
+  {label:'D',count:10,type:'normal',extra:0},
+  {label:'E',count:10,type:'normal',extra:0},
+  {label:'F',count:12,type:'normal',extra:0},
+  {label:'G',count:12,type:'normal',extra:0},
+  {label:'H',count:12,type:'normal',extra:0},
+];
+
+let S={movie:null,theatre:null,showtime:null,date:null,seats:[]};
+
+function goTo(p){
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+  document.getElementById('pg-'+p).classList.add('active');
+  if(p==='detail') renderDetail();
+  if(p==='theatre') renderTheatre();
+  if(p==='seat') renderSeat();
+  if(p==='summary') renderSummary();
+  if(p==='payment') document.getElementById('payAmt').textContent='₹'+calcTotal().total;
+  document.getElementById('pg-'+p).querySelector('.content') && (document.getElementById('pg-'+p).querySelector('.content').scrollTop=0);
+}
+
+function resetApp(){S={movie:null,theatre:null,showtime:null,date:null,seats:[]};goTo('home');}
+
+/* HOME */
+function renderHome(){
+  const hero=MOVIES[1];
+  document.getElementById('heroSection').innerHTML=`
+    <div class="hero" onclick="S.movie=MOVIES.find(m=>m.id==${hero.id});goTo('detail')" style="cursor:pointer;">
+      <div class="hero-eyebrow">Featured Today</div>
+      <div style="font-size:56px;margin-bottom:8px;">${hero.emoji}</div>
+      <div class="hero-title">${hero.title}</div>
+      <div class="hero-meta">
+        <div class="hero-rating">★ ${hero.rating}</div>
+        <div class="hero-match">98% Match</div>
+        <div class="hero-info">${hero.dur} • ${hero.lang}</div>
+      </div>
+      <div class="hero-desc">${hero.synopsis.substring(0,120)}...</div>
+      <div class="hero-btns">
+        <button class="btn-play">▶ Trailer</button>
+        <button class="btn-book" onclick="event.stopPropagation();S.movie=MOVIES.find(m=>m.id==${hero.id});goTo('detail')">Book Now</button>
+      </div>
+    </div>`;
+
+  const all=document.getElementById('nowShowingRow');
+  const trend=document.getElementById('trendingRow');
+  all.innerHTML=MOVIES.map(m=>`
+    <div class="movie-thumb" onclick="S.movie=MOVIES.find(x=>x.id==${m.id});goTo('detail')">
+      <div class="thumb-img" style="background:${m.col};">
+        <span style="font-size:44px;">${m.emoji}</span>
+        ${m.badge?`<div class="thumb-badge ${m.badge==='NEW'?'badge-new':'badge-hot'}">${m.badge}</div>`:''}
+      </div>
+      <div class="thumb-title">${m.title}</div>
+      <div class="thumb-sub">★ ${m.rating} • ${m.lang.split('•')[0].trim()}</div>
+    </div>`).join('');
+  trend.innerHTML=[...MOVIES].sort(()=>Math.random()-0.5).map(m=>`
+    <div class="movie-thumb" onclick="S.movie=MOVIES.find(x=>x.id==${m.id});goTo('detail')">
+      <div class="thumb-img" style="background:${m.col};">
+        <span style="font-size:44px;">${m.emoji}</span>
+      </div>
+      <div class="thumb-title">${m.title}</div>
+      <div class="thumb-sub">${m.genre}</div>
+    </div>`).join('');
+
+  document.querySelectorAll('.cat').forEach(c=>c.addEventListener('click',function(){document.querySelectorAll('.cat').forEach(x=>x.classList.remove('active'));this.classList.add('active');}));
+}
+
+/* DETAIL */
+function renderDetail(){
+  const m=S.movie; if(!m) return;
+  document.getElementById('detailHero').innerHTML=`
+    <div class="detail-hero">
+      <div class="detail-emoji">${m.emoji}</div>
+      <div class="detail-info">
+        <h2>${m.title}</h2>
+        <div class="detail-meta-row">
+          <div class="detail-rating">★ ${m.rating}</div>
+          <span class="dmeta">${m.dur}</span>
+          <span class="dmeta">•</span>
+          <span class="dmeta">${m.lang}</span>
+        </div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          <span class="dtag">UA</span>
+          ${m.genre.split('/').map(g=>`<span class="dtag">${g.trim()}</span>`).join('')}
+        </div>
+      </div>
+    </div>`;
+  document.getElementById('detailSynopsis').textContent=m.synopsis;
+  document.getElementById('castRow').innerHTML=m.cast.map(c=>`
+    <div class="cast-item">
+      <div class="cast-avatar">👤</div>
+      <div class="cast-name">${c}</div>
+    </div>`).join('');
+}
+
+/* THEATRE */
+function renderTheatre(){
+  const m=S.movie; if(m) document.getElementById('theatrePageTitle').textContent=m.title+' — Select Theatre';
+  const today=new Date();
+  const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  let dhtml='';
+  for(let i=0;i<7;i++){
+    const d=new Date(today);d.setDate(today.getDate()+i);
+    if(!S.date&&i===0) S.date=d.toDateString();
+    dhtml+=`<div class="date-pill ${S.date===d.toDateString()?'active':''}" onclick="selDate(this,'${d.toDateString()}')">
+      <div class="dp-day">${i===0?'Today':days[d.getDay()]}</div>
+      <div class="dp-num">${d.getDate()}</div>
+    </div>`;
+  }
+  document.getElementById('dateStrip').innerHTML=dhtml;
+  renderTheatreList();
+}
+
+function selDate(el,d){
+  document.querySelectorAll('.date-pill').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');S.date=d;
+}
+
+function renderTheatreList(){
+  document.getElementById('theatreList').innerHTML=THEATRES.map((t,i)=>`
+    <div class="theatre-card">
+      <div class="th-name">${t.name}</div>
+      <div class="th-meta"><span>📍 ${t.area} · ${t.dist}</span><span>★ ${t.rating}</span></div>
+      <div style="margin-bottom:10px;">${t.badges.map(b=>`<span class="th-badge">${b}</span>`).join('')}</div>
+      <div class="showtime-row">${t.times.map(tm=>`<div class="showtime-btn" onclick="pickShow(${i},'${tm}',this)">${tm}</div>`).join('')}</div>
+    </div>`).join('');
+}
+
+function pickShow(idx,time,el){
+  document.querySelectorAll('.showtime-btn').forEach(x=>x.classList.remove('sel'));
+  el.classList.add('sel');
+  S.theatre=THEATRES[idx];S.showtime=time;S.seats=[];
+  setTimeout(()=>goTo('seat'),280);
+}
+
+/* SEAT */
+function bookedSet(){
+  const seed=(S.movie?S.movie.id:1)*(S.theatre?THEATRES.indexOf(S.theatre)+1:1);
+  const b=new Set();
+  ROWS.forEach((r,ri)=>{for(let s=1;s<=r.count;s++){if((ri*s*seed)%7===0||(ri+s)%5===0)b.add(r.label+s);}});
+  return b;
+}
+
+function renderSeat(){
+  const m=S.movie;const t=S.theatre;
+  document.getElementById('seatTitle').textContent=m?m.title:'';
+  document.getElementById('seatSubtitle').textContent=t?t.name+' • '+S.showtime:'';
+  const booked=bookedSet();
+  let html='';
+  ROWS.forEach(r=>{
+    html+=`<div class="seat-section"><div class="row-label"><span>Row ${r.label} ${r.type==='vip'?'— VIP ₹'+(m.price+r.extra):'— Standard ₹'+m.price}</span><span>${r.label}</span></div>
+    <div class="seat-grid" style="grid-template-columns:repeat(${r.count},28px);">`;
+    for(let s=1;s<=r.count;s++){
+      const sid=r.label+s;
+      const isB=booked.has(sid);
+      const isS=S.seats.includes(sid);
+      const cls=isB?'booked':isS?(r.type+' selected'):r.type;
+      html+=`<button class="seat ${cls}" data-id="${sid}" data-type="${r.type}" data-price="${r.type==='vip'?m.price+r.extra:m.price}" ${isB?'disabled':''}>${s}</button>`;
+    }
+    html+=`</div></div>`;
+  });
+  document.getElementById('seatMap').innerHTML=html;
+  document.querySelectorAll('.seat:not([disabled])').forEach(b=>b.addEventListener('click',()=>toggleSeat(b)));
+  updateFooter();
+}
+
+function toggleSeat(btn){
+  const id=btn.dataset.id;const type=btn.dataset.type;
+  if(S.seats.includes(id)){
+    S.seats=S.seats.filter(x=>x!==id);
+    btn.classList.remove('selected');btn.classList.add(type);
+  }else{
+    if(S.seats.length>=6){return;}
+    S.seats.push(id);btn.classList.remove(type);btn.classList.add(type,'selected');
+  }
+  updateFooter();
+}
+
+function autoSuggest(){
+  S.seats=[];
+  document.querySelectorAll('.seat').forEach(b=>{b.classList.remove('selected');const t=b.dataset.type;if(t)b.classList.add(t);});
+  const booked=bookedSet();
+  ['E5','E6','E7'].forEach(sid=>{
+    if(!booked.has(sid)){
+      S.seats.push(sid);
+      const b=document.getElementById ? document.querySelector(`[data-id="${sid}"]`) : null;
+      if(b){b.classList.remove('normal');b.classList.add('normal','selected');}
+    }
+  });
+  updateFooter();
+}
+
+function updateFooter(){
+  const f=document.getElementById('seatFooter');
+  if(!S.seats.length){f.classList.add('sf-hidden');return;}
+  f.classList.remove('sf-hidden');
+  let total=0;
+  S.seats.forEach(sid=>{
+    const b=document.querySelector(`[data-id="${sid}"]`);
+    if(b)total+=parseInt(b.dataset.price);
+  });
+  document.getElementById('sfSeats').textContent=S.seats.join(' · ');
+  document.getElementById('sfPrice').textContent='₹'+total;
+}
+
+/* SUMMARY */
+function calcTotal(){
+  let base=0;
+  S.seats.forEach(sid=>{
+    const b=document.querySelector(`[data-id="${sid}"]`);
+    if(b)base+=parseInt(b.dataset.price);
+  });
+  const fee=Math.round(base*0.1);
+  return{base,fee,total:base+fee};
+}
+
+function renderSummary(){
+  const m=S.movie;const t=S.theatre;if(!m||!t)return;
+  document.getElementById('shEmoji').textContent=m.emoji;
+  document.getElementById('shTitle').textContent=m.title;
+  document.getElementById('shSub').textContent=m.lang+' · '+m.genre;
+  document.getElementById('icTheatre').textContent=t.name;
+  const dStr=S.date?new Date(S.date).toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short'}):'';
+  document.getElementById('icTime').textContent=dStr+' · '+S.showtime;
+  document.getElementById('icSeats').textContent=S.seats.join(', ');
+  const{base,fee,total}=calcTotal();
+  document.getElementById('icTicketLbl').textContent='Tickets ('+S.seats.length+'×)';
+  document.getElementById('icTicketAmt').textContent='₹'+base;
+  document.getElementById('icFee').textContent='₹'+fee;
+  document.getElementById('icTotal').textContent='₹'+total;
+  document.getElementById('payAmt').textContent='₹'+total;
+}
+
+/* PAYMENT */
+function switchPay(type,el){
+  document.querySelectorAll('.pay-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('payUPI').classList.toggle('pay-hidden',type!=='upi');
+  document.getElementById('payCard').classList.toggle('pay-hidden',type!=='card');
+  document.getElementById('payWallet').classList.toggle('pay-hidden',type!=='wallet');
+}
+
+function selectWallet(el){document.querySelectorAll('.wallet-item').forEach(w=>w.classList.remove('active'));el.classList.add('active');}
+
+function doPayment(){
+  const m=S.movie;const t=S.theatre;
+  document.getElementById('tMovie').textContent=m.title;
+  document.getElementById('tEmoji').textContent=m.emoji;
+  document.getElementById('tSub').textContent=m.lang+' · '+m.genre;
+  document.getElementById('tTheatre').textContent=t.name;
+  document.getElementById('tSeats').textContent=S.seats.join(', ');
+  const dStr=S.date?new Date(S.date).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}):'';
+  document.getElementById('tDate').textContent=dStr;
+  document.getElementById('tTime').textContent=S.showtime;
+  const bid='#CBB'+Math.floor(Math.random()*900000+100000);
+  document.getElementById('bookingId').textContent=bid;
+  const qr=document.getElementById('qrGrid');
+  let cells='';
+  const pat=[1,1,1,1,1,1,1,0,1,0,1,0,1,0,1,1,1,0,0,1,1,0,1,1,1,0,0,0,0,0,1,1,0,1,0,1];
+  pat.forEach(v=>{cells+=`<div class="qr-cell" style="background:${v?'#fff':'transparent'};"></div>`;});
+  qr.innerHTML=cells;
+  goTo('success');
+}
+
+renderHome();
+</script>
