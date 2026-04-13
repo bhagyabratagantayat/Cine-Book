@@ -31,8 +31,8 @@ const Summary = () => {
       // 2. Persist Booking to Backend
       const response = await axios.post((import.meta.env.VITE_API_URL || 'http://localhost:5000') + '/api/bookings', {
         showId: showId,
-        movieId: movie?._id,
-        movieTitle: movie?.title,
+        movieId: show?.movieId,
+        movieTitle: show?.movieTitle,
         theatreName: theatre?.name,
         showTime: new Date(show?.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         showDate: new Date(show?.startTime).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }),
@@ -80,7 +80,7 @@ const Summary = () => {
               <div className="flex justify-between items-start border-b border-white/5 pb-10">
                 <div className="space-y-2">
                    <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">CineBook Experience</p>
-                   <h2 className="text-3xl font-black tracking-tight uppercase italic text-primary">{movie?.title}</h2>
+                   <h2 className="text-3xl font-black tracking-tight uppercase italic text-primary">{show?.movieTitle}</h2>
                    <p className="text-xs font-bold text-white/50">{theatre?.name} • {show && new Date(show.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
                 </div>
                 <div className="text-right space-y-1">

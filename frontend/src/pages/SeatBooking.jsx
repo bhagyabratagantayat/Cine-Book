@@ -91,7 +91,7 @@ const SeatBooking = () => {
       <div className="bg-white/5 border-b border-white/5 py-4">
         <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
            <div>
-              <h1 className="text-xl font-black italic uppercase tracking-tighter">{show.movie.title}</h1>
+              <h1 className="text-xl font-black italic uppercase tracking-tighter">{show.movieTitle}</h1>
               <p className="text-[10px] text-white/40 font-black uppercase tracking-widest flex items-center gap-2">
                  {show.theatre.name} <ChevronRight className="w-3 h-3" /> {new Date(show.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </p>

@@ -19,7 +19,7 @@ const getShowsByMovie = async (req, res) => {
     end.setHours(23, 59, 59, 999);
 
     const shows = await Show.find({
-      movie: movieId,
+      movieId: Number(movieId),
       startTime: { $gte: start, $lte: end }
     }).populate('theatre').sort({ startTime: 1 });
 

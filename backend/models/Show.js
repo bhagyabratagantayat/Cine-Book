@@ -1,7 +1,9 @@
 const mongoose = require('mongoose');
 
 const showSchema = new mongoose.Schema({
-  movie: { type: mongoose.Schema.Types.ObjectId, ref: 'Movie', required: true },
+  movieId: { type: Number, required: true },
+  movieTitle: { type: String, required: true },
+  moviePoster: { type: String },
   theatre: { type: mongoose.Schema.Types.ObjectId, ref: 'Theatre', required: true },
   startTime: { type: Date, required: true },
   language: { type: String, required: true },
