@@ -6,8 +6,10 @@ import MovieCard from '../components/MovieCard';
 import LoadingSkeleton from '../components/LoadingSkeleton';
 import { Search } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import usePageTitle from '../hooks/usePageTitle';
 
 const Home = () => {
+  usePageTitle('CineBook | Home');
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);

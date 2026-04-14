@@ -5,8 +5,10 @@ import Navbar from '../components/Navbar';
 import { Ticket, CreditCard, ShieldCheck, QrCode, ArrowRight, Tag, Wallet, CheckCircle2, XCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useBooking } from '../context/BookingContext';
+import usePageTitle from '../hooks/usePageTitle';
 
 const Summary = () => {
+  usePageTitle('CineBook | Checkout');
   const { showId } = useParams();
   const navigate = useNavigate();
   const { bookingData, clearBooking } = useBooking();

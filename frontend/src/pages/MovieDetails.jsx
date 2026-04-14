@@ -7,8 +7,10 @@ import { Calendar, MapPin, Clock, Info as InfoIcon, ChevronRight, Star, Ticket, 
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
 import { useBooking } from '../context/BookingContext';
+import usePageTitle from '../hooks/usePageTitle';
 
 const MovieDetails = () => {
+  usePageTitle('CineBook | Movie Details');
   const { id } = useParams();
   const navigate = useNavigate();
   const [movie, setMovie] = useState(null);

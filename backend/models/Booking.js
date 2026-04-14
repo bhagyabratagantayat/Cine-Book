@@ -10,7 +10,7 @@ const bookingSchema = new mongoose.Schema({
   showTime: { type: String, required: true },
   showDate: { type: String, required: true },
   seats: [{ type: String, required: true }],
-  user: { type: String, required: true }, // userId or guestId
+  userId: { type: String, required: true }, // userId or guestId
   foodItems: [{
     foodId: String,
     name: String,

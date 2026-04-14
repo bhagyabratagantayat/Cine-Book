@@ -7,8 +7,11 @@ import { Armchair, ChevronRight, Zap, Info, ScreenShare, ShieldCheck } from 'luc
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
 import { useBooking } from '../context/BookingContext';
+import Hall3DPreview from './Hall3DPreview';
+import usePageTitle from '../hooks/usePageTitle';
 
 const SeatBooking = () => {
+  usePageTitle('CineBook | Select Seats');
   const { showId } = useParams();
   const navigate = useNavigate();
   const socket = useSocket();
@@ -18,6 +21,7 @@ const SeatBooking = () => {
   const [selectedSeats, setSelectedSeats] = useState(bookingData.seats || []);
   const [lockedSeats, setLockedSeats] = useState({}); // { seatId: userId }
   const [loading, setLoading] = useState(true);
+  const [is3DViewOpen, setIs3DViewOpen] = useState(false);
 
   // Load show details
   useEffect(() => {
@@ -107,10 +111,17 @@ const SeatBooking = () => {
                  {show.theatre.name} <ChevronRight className="w-3 h-3" /> {new Date(show.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </p>
            </div>
-           <div className="flex bg-white/5 rounded-xl px-4 py-2 border border-white/10 items-center gap-3">
+            <div className="flex bg-white/5 rounded-xl px-4 py-2 border border-white/10 items-center gap-3">
               <Zap className="w-4 h-4 text-orange-500" />
               <span className="text-[10px] font-black uppercase text-orange-500">Auto-unlock after 2 mins</span>
            </div>
+           
+           <button 
+             onClick={() => setIs3DViewOpen(true)}
+             className="bg-primary/10 hover:bg-primary/20 border border-primary/30 px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest text-primary transition-all flex items-center gap-2"
+           >
+              <ScreenShare className="w-3 h-3" /> View 3D Hall
+           </button>
         </div>
       </div>
 
@@ -251,6 +262,19 @@ const SeatBooking = () => {
             Cancellations are available till 2 hours before showtime.
          </p>
       </div>
+
+      {/* 3D PREVIEW MODAL */}
+      <AnimatePresence>
+        {is3DViewOpen && (
+          <Hall3DPreview 
+            show={show}
+            selectedSeats={selectedSeats}
+            lockedSeats={lockedSeats}
+            toggleSeat={toggleSeat}
+            onClose={() => setIs3DViewOpen(false)}
+          />
+        )}
+      </AnimatePresence>
 
     </div>
   );

@@ -6,8 +6,10 @@ import { Coffee, Pizza, Cookie, Plus, Minus, ArrowRight, ShoppingCart, Info } fr
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
 import { useBooking } from '../context/BookingContext';
+import usePageTitle from '../hooks/usePageTitle';
 
 const FoodSelection = () => {
+    usePageTitle('CineBook | Food & Snacks');
     const { showId } = useParams();
     const navigate = useNavigate();
     const { bookingData, updateBooking } = useBooking();

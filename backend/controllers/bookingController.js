@@ -72,7 +72,7 @@ const createBooking = async (req, res) => {
       showTime, 
       showDate, 
       seats, 
-      user: guestId,
+      userId: guestId,
       foodItems: itemsForBooking,
       foodTotal,
       couponCode: couponCode ? couponCode.toUpperCase() : null,
@@ -160,6 +160,18 @@ const createBooking = async (req, res) => {
   }
 };
 
+// @desc    Get all bookings for a user/guest
+// @route   GET /api/bookings/history/:userId
+const getUserBookings = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const bookings = await Booking.find({ userId }).sort({ createdAt: -1 });
+    res.json(bookings);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // @desc    Get booking by ID
 // @route   GET /api/bookings/:id
 const getBookingById = async (req, res) => {
@@ -172,4 +184,4 @@ const getBookingById = async (req, res) => {
   }
 };
 
-module.exports = { createBooking, getBookingById };
+module.exports = { createBooking, getBookingById, getUserBookings };

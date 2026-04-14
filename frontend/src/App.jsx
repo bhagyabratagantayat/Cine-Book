@@ -10,6 +10,7 @@ import MovieDetails from './pages/MovieDetails';
 import SeatBooking from './pages/SeatBooking';
 import Summary from './pages/Summary';
 import Ticket from './pages/Ticket';
+import MyBookings from './pages/MyBookings';
 import FoodSelection from './pages/FoodSelection';
 import Wallet from './pages/Wallet';
 import ManageFoods from './pages/Admin/ManageFoods';
@@ -31,6 +32,7 @@ function App() {
             <Route path="/food/:showId" element={<FoodSelection />} />
             <Route path="/summary/:showId" element={<Summary />} />
             <Route path="/ticket/:bookingId" element={<Ticket />} />
+            <Route path="/my-bookings" element={<MyBookings />} />
             <Route path="/wallet" element={<Wallet />} />
             <Route path="/admin/foods" element={<ManageFoods />} />
             <Route path="/admin/coupons" element={<ManageCoupons />} />

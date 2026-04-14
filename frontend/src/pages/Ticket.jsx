@@ -12,8 +12,10 @@ import {
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
+import usePageTitle from '../hooks/usePageTitle';
 
 const Ticket = () => {
+  usePageTitle('CineBook | Your Ticket');
   const { bookingId } = useParams();
   const navigate = useNavigate();
   const ticketRef = useRef(null);
