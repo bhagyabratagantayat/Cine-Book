@@ -121,19 +121,19 @@ const Summary = () => {
           {/* LEFT: ORDER SUMMARY */}
           <div className="lg:col-span-2 space-y-8">
               <div className="space-y-2">
-                 <h1 className="text-5xl font-black italic tracking-tighter uppercase leading-none">Checkout</h1>
+                 <h1 className="text-3xl md:text-5xl font-black italic tracking-tighter uppercase leading-none">Checkout</h1>
                  <p className="text-white/40 text-sm font-bold">Review your order and select payment method</p>
               </div>
 
               {/* Movie & Seats Card */}
-              <div className="bg-white/5 border border-white/10 rounded-[2.5rem] p-10 overflow-hidden relative group">
+              <div className="bg-white/5 border border-white/10 rounded-3xl md:rounded-[2.5rem] p-6 md:p-10 overflow-hidden relative group">
                  <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 blur-[100px] -mr-32 -mt-32" />
-                 <div className="relative flex flex-col md:flex-row gap-10 items-start">
-                    <img src={movie?.poster} alt={movie?.title} className="w-32 h-44 object-cover rounded-2xl shadow-2xl" />
+                 <div className="relative flex flex-col md:flex-row gap-6 md:gap-10 items-start">
+                    <img src={movie?.poster} alt={movie?.title} className="w-24 h-32 md:w-32 md:h-44 object-cover rounded-xl md:rounded-2xl shadow-2xl" />
                     <div className="space-y-6 flex-1">
                        <div>
                           <p className="text-[10px] font-black text-primary uppercase tracking-[0.4em] mb-2">{theatre?.name}</p>
-                          <h2 className="text-4xl font-black italic uppercase tracking-tighter">{movie?.title}</h2>
+                          <h2 className="text-2xl md:text-4xl font-black italic uppercase tracking-tighter">{movie?.title}</h2>
                           <p className="text-sm font-bold text-white/60">{showDate} • {showTime}</p>
                        </div>
                        <div className="flex flex-wrap gap-3">
@@ -147,7 +147,7 @@ const Summary = () => {
 
               {/* Food Summary Card */}
               {selectedFoods?.length > 0 && (
-                 <div className="bg-white/5 border border-white/10 rounded-[2.5rem] p-10">
+                 <div className="bg-white/5 border border-white/10 rounded-3xl md:rounded-[2.5rem] p-6 md:p-10">
                     <h3 className="text-xl font-black italic uppercase tracking-tighter mb-8 flex items-center gap-3">
                        <CheckCircle2 className="text-green-500 w-5 h-5" /> Snacks & Drinks
                     </h3>
@@ -222,7 +222,7 @@ const Summary = () => {
               </div>
 
               {/* Price Breakdown */}
-              <div className="bg-white/5 border border-white/10 rounded-[2.5rem] p-10 space-y-10 relative overflow-hidden">
+              <div className="bg-white/5 border border-white/10 rounded-3xl md:rounded-[2.5rem] p-6 md:p-10 space-y-8 md:space-y-10 relative overflow-hidden">
                  <div className="absolute bottom-0 left-0 w-full h-1 bg-primary/20 shadow-[0_0_20px_rgba(255,24,24,0.5)]" />
                  
                  <div className="space-y-6">
@@ -255,8 +255,8 @@ const Summary = () => {
                     
                     <div className="pt-8 border-t border-white/5 space-y-2">
                        <div className="flex justify-between items-end">
-                          <span className="text-sm font-black text-white/20 uppercase italic leading-none">Final Payable</span>
-                          <span className="text-5xl font-black tracking-tighter text-primary italic leading-none">₹{finalPayable}</span>
+                          <span className="text-xs md:text-sm font-black text-white/20 uppercase italic leading-none">Final Payable</span>
+                          <span className="text-3xl md:text-5xl font-black tracking-tighter text-primary italic leading-none">₹{finalPayable}</span>
                        </div>
                     </div>
                  </div>
@@ -264,10 +264,10 @@ const Summary = () => {
                  <button 
                   disabled={isProcessing}
                   onClick={handlePayment}
-                  className="w-full bg-primary hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-black py-5 rounded-3xl text-xl flex items-center justify-center gap-4 transition-all shadow-[0_20px_50px_rgba(255,24,24,0.3)]"
+                  className="w-full bg-primary hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-black py-4 md:py-5 rounded-2xl md:rounded-3xl text-lg md:text-xl flex items-center justify-center gap-4 transition-all shadow-[0_20px_50px_rgba(255,24,24,0.3)]"
                  >
                     {isProcessing ? 'PROCESSING...' : finalPayable === 0 ? 'PAY WITH WALLET' : 'CONFIRM & PAY'}
-                    {!isProcessing && <ArrowRight className="w-6 h-6" />}
+                    {!isProcessing && <ArrowRight className="w-5 h-5 md:w-6 md:h-6" />}
                  </button>
                  
                  <div className="flex items-center justify-center gap-6">

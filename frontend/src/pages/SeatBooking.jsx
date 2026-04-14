@@ -146,7 +146,7 @@ const SeatBooking = () => {
                      <span className="bg-white/5 border border-white/10 px-3 py-1 rounded-full text-[9px] font-black tracking-widest uppercase text-white/40">U/A 16+</span>
                      <span className="bg-white/5 border border-white/10 px-3 py-1 rounded-full text-[9px] font-black tracking-widest uppercase text-white/40">Action • Thriller</span>
                   </div>
-                  <h1 className="text-5xl md:text-7xl font-black italic uppercase tracking-tighter leading-none">{show.movieTitle}</h1>
+                  <h1 className="text-4xl md:text-7xl font-black italic uppercase tracking-tighter leading-none">{show.movieTitle}</h1>
                </div>
 
                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-3xl mx-auto lg:mx-0">
@@ -198,7 +198,7 @@ const SeatBooking = () => {
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-primary/5 blur-[150px] pointer-events-none -z-10" />
           
           {/* Legend Strip */}
-          <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-6 mb-20 bg-black/40 px-12 py-5 rounded-full border border-white/5 w-fit mx-auto shadow-xl">
+          <div className="flex flex-wrap items-center justify-center gap-x-4 md:gap-x-10 gap-y-4 mb-12 md:mb-20 bg-black/40 px-6 md:px-12 py-4 md:py-5 rounded-[2rem] md:rounded-full border border-white/5 w-fit mx-auto shadow-xl">
              <LegendItem color="bg-green-500 border-green-500/50" label="Available" price="₹180" />
              <LegendItem color="bg-white/10" label="Booked" />
              <LegendItem color="bg-primary shadow-[0_0_15px_rgba(255,24,24,0.4)]" label="Selected" price="₹180" />
@@ -207,7 +207,7 @@ const SeatBooking = () => {
 
           <div className="flex flex-col items-center overflow-x-auto pb-12 scrollbar-hide">
             
-            <div className="min-w-[800px] flex flex-col items-center">
+            <div className="w-fit flex flex-col items-center">
                 {/* 🌈 NEON CURVED SCREEN */}
                 <div className="w-full max-w-3xl mb-32 relative">
                     <div className="h-1.5 w-full bg-primary/20 rounded-full blur-[2px]" />
@@ -309,32 +309,32 @@ const SeatBooking = () => {
             initial={{ y: 200 }}
             animate={{ y: 0 }}
             exit={{ y: 200 }}
-            className="fixed bottom-0 left-0 right-0 p-8 md:p-12 z-[90]"
+            className="fixed bottom-0 left-0 right-0 p-4 md:p-12 z-[90]"
           >
             <div className="max-w-6xl mx-auto">
-               <div className="bg-[#111111]/90 backdrop-blur-3xl border-2 border-white/10 rounded-[3rem] p-8 flex flex-col md:flex-row items-center justify-between gap-10 shadow-[0_40px_100px_rgba(0,0,0,0.8)] relative group">
+               <div className="bg-[#111111]/90 backdrop-blur-3xl border-2 border-white/10 rounded-[2rem] md:rounded-[3rem] p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 md:gap-10 shadow-[0_40px_100px_rgba(0,0,0,0.8)] relative group">
                   <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-1.5 bg-primary/20 rounded-full blur-[2px] -mt-1" />
                   
-                  <div className="flex items-center gap-10 w-full md:w-auto">
+                  <div className="flex items-center gap-4 md:gap-10 w-full md:w-auto">
                      <div className="hidden sm:flex bg-primary p-6 rounded-[2rem] shadow-[0_20px_40px_rgba(255,24,24,0.3)] border border-white/20">
                         <CreditCard className="w-8 h-8 text-white" />
                      </div>
-                     <div className="flex flex-col gap-3">
+                      <div className="flex flex-col gap-1 md:gap-3">
                         <div className="flex items-center gap-4">
                            <span className="bg-primary/20 text-primary border border-primary/20 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-[0.2em] italic">Ticket Selection</span>
                         </div>
                         <h4 className="text-[10px] font-black text-white/20 uppercase tracking-[0.4em]">Selected Seats</h4>
-                        <p className="text-3xl font-black italic tracking-tighter uppercase leading-none">
+                        <p className="text-xl md:text-3xl font-black italic tracking-tighter uppercase leading-none">
                            {selectedSeats.map(s => s.id).join(' • ')}
                         </p>
-                     </div>
+                      </div>
                   </div>
 
-                  <div className="flex items-center gap-12 w-full md:w-auto pt-8 md:pt-0 border-t md:border-t-0 border-white/5">
-                     <div className="text-center md:text-right">
+                  <div className="flex items-center gap-6 md:gap-12 w-full md:w-auto pt-4 md:pt-0 border-t md:border-t-0 border-white/5">
+                      <div className="text-center md:text-right">
                         <span className="text-[10px] font-black text-white/30 uppercase tracking-[0.4em] block mb-2">Total Amount</span>
-                        <span className="text-5xl font-black italic text-primary tracking-tighter leading-none">₹{totalPrice}</span>
-                     </div>
+                        <span className="text-3xl md:text-5xl font-black italic text-primary tracking-tighter leading-none">₹{totalPrice}</span>
+                      </div>
                      
                      <div className="flex flex-col gap-3 flex-1 md:flex-none">
                         <button 
@@ -345,10 +345,10 @@ const SeatBooking = () => {
                         </button>
                         <button 
                             onClick={() => navigate(`/food/${showId}`)}
-                            className="bg-primary hover:bg-red-600 px-12 py-5 rounded-[2rem] font-black italic uppercase tracking-widest transition-all shadow-[0_25px_50px_rgba(255,24,24,0.4)] flex items-center justify-center gap-4 group"
+                            className="bg-primary hover:bg-red-600 px-8 md:px-12 py-4 md:py-5 rounded-2xl md:rounded-[2rem] font-black italic uppercase text-xs md:text-sm tracking-widest transition-all shadow-[0_25px_50px_rgba(255,24,24,0.4)] flex items-center justify-center gap-4 group"
                         >
                             Proceed to Food & Payment
-                            <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" />
+                            <ArrowRight className="w-5 h-5 md:w-6 md:h-6 group-hover:translate-x-2 transition-transform" />
                         </button>
                      </div>
                   </div>

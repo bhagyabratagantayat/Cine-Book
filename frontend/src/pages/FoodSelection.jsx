@@ -68,7 +68,7 @@ const FoodSelection = () => {
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
                     <div className="space-y-2">
                         <h4 className="text-[10px] font-black text-primary uppercase tracking-[0.4em] italic">Pre-book Canteen</h4>
-                        <h1 className="text-5xl font-black italic tracking-tighter uppercase leading-none">Grab a Snack?</h1>
+                        <h1 className="text-3xl md:text-5xl font-black italic tracking-tighter uppercase leading-none">Grab a Snack?</h1>
                         <p className="text-white/40 text-sm font-bold max-w-md">Skip the queue at the counter. Pre-order your favorite snacks and it will be delivered to your seat {bookingData.seats.join(', ')}.</p>
                     </div>
                     
@@ -146,7 +146,7 @@ const FoodSelection = () => {
                         initial={{ y: 200 }}
                         animate={{ y: 0 }}
                         exit={{ y: 200 }}
-                        className="fixed bottom-0 left-0 right-0 bg-background/60 backdrop-blur-3xl border-t border-white/5 p-6 z-[60] shadow-2xl"
+                        className="fixed bottom-0 left-0 right-0 bg-background/60 backdrop-blur-3xl border-t border-white/5 p-4 md:p-6 z-[60] shadow-2xl"
                     >
                         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
                             <div className="flex items-center gap-6">
@@ -162,13 +162,13 @@ const FoodSelection = () => {
                             </div>
 
                             <div className="flex items-center gap-12">
-                                <div className="text-right">
+                                <div className="text-center md:text-right">
                                     <span className="text-[10px] font-black text-white/30 uppercase tracking-widest block">Food Total</span>
-                                    <span className="text-3xl font-black italic text-primary tracking-tighter">₹{totalFoodPrice}</span>
+                                    <span className="text-2xl md:text-3xl font-black italic text-primary tracking-tighter">₹{totalFoodPrice}</span>
                                 </div>
                                 <button 
                                     onClick={handleProceed}
-                                    className="bg-primary hover:bg-red-600 px-12 py-4 rounded-2xl font-black italic uppercase tracking-widest transition-all shadow-xl shadow-primary/30 flex items-center gap-3"
+                                    className="bg-primary hover:bg-red-600 px-8 md:px-12 py-3 md:py-4 rounded-2xl font-black italic uppercase text-xs md:text-sm tracking-widest transition-all shadow-xl shadow-primary/30 flex items-center gap-3"
                                 >
                                     Review & Pay
                                     <ArrowRight className="w-5 h-5" />
