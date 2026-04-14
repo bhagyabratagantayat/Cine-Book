@@ -1,3 +1,4 @@
+const axios = require('axios');
 const Booking = require('../models/Booking');
 const Show = require('../models/Show');
 const Coupon = require('../models/Coupon');
@@ -184,4 +185,62 @@ const getBookingById = async (req, res) => {
   }
 };
 
-module.exports = { createBooking, getBookingById, getUserBookings };
+// @desc    Generate PDF ticket via Java Microservice
+// @route   POST /api/bookings/pdf
+const generatePdf = async (req, res) => {
+  try {
+    const { bookingId } = req.body;
+    console.log(`[Node] Requesting PDF for Booking: ${bookingId}`);
+
+    const booking = await Booking.findOne({ bookingId });
+    if (!booking) {
+      return res.status(404).json({ message: 'Booking not found' });
+    }
+
+    // Format data for Java Service
+    const ticketData = {
+      bookingId: booking.bookingId,
+      movieTitle: booking.movieTitle,
+      theatre: booking.theatreName,
+      date: booking.showDate,
+      time: booking.showTime,
+      seats: booking.seats,
+      foodItems: booking.foodItems.map(item => ({
+        name: item.name,
+        quantity: item.quantity,
+        price: item.price
+      })),
+      totalAmount: booking.totalAmount
+    };
+
+    console.log('[Node] Sending data to Java Service (Port 8080)...');
+
+    // Call Java Service
+    const response = await axios.post('http://localhost:8080/generate-ticket', ticketData, {
+      responseType: 'arraybuffer', // Crucial for binary data
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+
+    console.log('[Node] PDF received from Java Service. Forwarding to client...');
+
+    // Forward PDF to client
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': `attachment; filename=ticket-${bookingId}.pdf`,
+      'Content-Length': response.data.length
+    });
+
+    res.send(Buffer.from(response.data));
+
+  } catch (error) {
+    console.error('[Node] PDF Generation Proxy Error:', error.message);
+    if (error.response) {
+      console.error('[Node] Java Service Error:', error.response.status, error.response.data.toString());
+    }
+    res.status(500).json({ message: 'Failed to generate PDF via Java Service' });
+  }
+};
+
+module.exports = { createBooking, getBookingById, getUserBookings, generatePdf };

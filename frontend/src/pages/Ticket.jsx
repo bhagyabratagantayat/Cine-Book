@@ -39,39 +39,35 @@ const Ticket = () => {
   }, [bookingId]);
 
   const handleDownloadPDF = async () => {
-    if (!ticketRef.current || isDownloading) return;
+    if (isDownloading) return;
     setIsDownloading(true);
-    const loadingToast = toast.loading('Generating your ticket PDF...');
+    const loadingToast = toast.loading('Generating premium ticket...');
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 800));
-      const canvas = await html2canvas(ticketRef.current, {
-        scale: 2,
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: '#111111',
-        logging: false,
-      });
-
-      const imgData = canvas.toDataURL('image/jpeg', 0.95);
-      const pdf = new jsPDF('p', 'mm', 'a4');
-
-      const pageWidth = pdf.internal.pageSize.getWidth();
-      const pageHeight = pdf.internal.pageSize.getHeight();
+      console.log('[Frontend] Requesting PDF for:', bookingId);
       
-      const imgWidth = pageWidth - 40;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      
-      const x = (pageWidth - imgWidth) / 2;
-      const y = (pageHeight - imgHeight) / 2;
+      const response = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/bookings/pdf`, 
+        { bookingId },
+        { responseType: 'blob' } // Crucial for receiving binary PDF
+      );
 
-      pdf.addImage(imgData, 'JPEG', x, y, imgWidth, imgHeight);
-      pdf.save(`CineBook_Ticket_${booking.bookingId}.pdf`);
+      // Create a blob URL and trigger download
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `CineBook_Ticket_${bookingId}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      
+      // Cleanup
+      link.parentNode.removeChild(link);
+      window.URL.revokeObjectURL(url);
       
       toast.success('Ticket downloaded!', { id: loadingToast });
     } catch (error) {
-      console.error('PDF error:', error);
-      toast.error('Failed to generate PDF', { id: loadingToast });
+      console.error('[Frontend] Download Error:', error);
+      toast.error('Failed to generate PDF. Please try again.', { id: loadingToast });
     } finally {
       setIsDownloading(false);
     }

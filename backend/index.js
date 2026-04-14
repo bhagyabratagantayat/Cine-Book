@@ -11,12 +11,14 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "*",
+    origin: ["https://cine-book-ruddy.vercel.app", "http://localhost:5173"],
     methods: ["GET", "POST"]
   }
 });
 
-app.use(cors());
+app.use(cors({
+  origin: ["https://cine-book-ruddy.vercel.app", "http://localhost:5173"]
+}));
 app.use(express.json());
 
 // Routes
