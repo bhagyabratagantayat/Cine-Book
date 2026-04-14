@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Ticket, Search, User, Bell } from 'lucide-react';
+import { Ticket, Search, User, Bell, Wallet } from 'lucide-react';
 
 const Navbar = () => {
   return (
@@ -33,6 +33,9 @@ const Navbar = () => {
               <button className="p-2 hover:bg-white/10 rounded-full text-white/70 transition-colors">
                 <Bell className="w-5 h-5" />
               </button>
+              <Link to="/wallet" className="p-2 hover:bg-white/10 rounded-full text-white/70 transition-colors">
+                <Wallet className="w-5 h-5" />
+              </Link>
               <button className="flex items-center gap-2 bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 px-4 py-1.5 rounded-full text-sm font-bold transition-all">
                 <User className="w-4 h-4" />
                 <span>Guest</span>

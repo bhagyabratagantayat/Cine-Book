@@ -1,5 +1,9 @@
 const Booking = require('../models/Booking');
 const Show = require('../models/Show');
+const Coupon = require('../models/Coupon');
+const WalletTransaction = require('../models/WalletTransaction');
+const FoodOrder = require('../models/FoodOrder');
+const { getOrCreateUser } = require('./walletController');
 
 // @desc    Create new booking
 // @route   POST /api/bookings
@@ -14,10 +18,16 @@ const createBooking = async (req, res) => {
       showTime, 
       showDate, 
       seats, 
+      subTotal,
       totalAmount, 
       paymentId, 
       paymentMethod,
-      showId 
+      showId,
+      userId: guestId,
+      foodItems,
+      couponCode,
+      discountAmount,
+      walletPaidAmount
     } = req.body;
 
     // 1. Atomically check if seats are already booked
@@ -31,10 +41,27 @@ const createBooking = async (req, res) => {
       return res.status(400).json({ message: `Seats ${overlap.join(', ')} were just taken. Please try other seats.` });
     }
 
-    // 2. Generate Unique Booking ID
+    // 2. Identify/Create User
+    const user = await getOrCreateUser(guestId);
+    const walletBalanceBefore = user.wallet.balance;
+
+    // 3. Generate Unique Booking ID
     const bookingId = 'CB' + Math.random().toString(36).substr(2, 7).toUpperCase();
 
-    // 3. Save Booking
+    // 4. Calculate Food Total and Prepare Items
+    const foodTotal = foodItems ? foodItems.reduce((sum, item) => sum + (item.price * item.quantity), 0) : 0;
+    const itemsForBooking = foodItems ? foodItems.map(item => ({
+      foodId: item.foodId,
+      name: item.name,
+      quantity: item.quantity,
+      price: item.price,
+      total: item.price * item.quantity
+    })) : [];
+
+    // 5. Calculate Cashback (10 per seat)
+    const cashbackEarned = seats.length * 10;
+
+    // 6. Save Booking
     const booking = new Booking({
       bookingId,
       movieId,
@@ -45,19 +72,82 @@ const createBooking = async (req, res) => {
       showTime, 
       showDate, 
       seats, 
-      totalAmount, 
-      paymentId, 
+      user: guestId,
+      foodItems: itemsForBooking,
+      foodTotal,
+      couponCode: couponCode ? couponCode.toUpperCase() : null,
+      couponDiscount: discountAmount || 0,
+      discountAmount: discountAmount || 0,
+      walletPaidAmount,
+      cashbackEarned,
+      walletBalanceBefore,
+      subTotal, // This is ticketPrice + foodTotal passed from frontend
+      totalAmount, // subTotal - discountAmount passed from frontend
+      paymentId: paymentId || 'WALLET_ONLY', 
       paymentMethod,
       bookingStatus: 'confirmed'
     });
 
     await booking.save();
 
-    // 4. Update Show Model with newly booked seats
+    // 7. Create Food Order (legacy support if needed)
+    if (itemsForBooking.length > 0) {
+      const foodOrder = new FoodOrder({
+        userId: guestId,
+        bookingId: booking._id,
+        items: itemsForBooking,
+        totalAmount: foodTotal,
+        seatNumber: seats[0],
+        status: 'confirmed'
+      });
+      await foodOrder.save();
+    }
+
+    // 8. Deduct from Wallet if used
+    if (walletPaidAmount > 0) {
+      user.wallet.balance -= walletPaidAmount;
+      const walletTx = new WalletTransaction({
+        userId: user._id,
+        type: 'debit',
+        amount: walletPaidAmount,
+        bookingId: booking._id,
+        description: `Payment for booking ${bookingId}`
+      });
+      await walletTx.save();
+    }
+
+    // 9. Apply Cashback
+    if (cashbackEarned > 0) {
+      user.wallet.balance += cashbackEarned;
+      user.wallet.cashback += cashbackEarned;
+      const cashbackTx = new WalletTransaction({
+        userId: user._id,
+        type: 'cashback',
+        amount: cashbackEarned,
+        bookingId: booking._id,
+        description: `Cashback for booking ${bookingId} (${seats.length} seats)`
+      });
+      await cashbackTx.save();
+    }
+
+    // Store final balance
+    booking.walletBalanceAfter = user.wallet.balance;
+    await booking.save();
+    await user.save();
+
+    // 10. Mark Coupon as used
+    if (couponCode) {
+      await Coupon.findOneAndUpdate(
+        { code: { $regex: new RegExp(`^${couponCode}$`, 'i') } },
+        { $push: { usedBy: guestId } }
+      );
+    }
+
+    // 11. Update Show Model
     const newBookedSeats = seats.map(seatId => ({
       seatId,
       status: 'booked',
-      userId: req.body.userId || null 
+      userId: user._id
     }));
 
     show.bookedSeats.push(...newBookedSeats);

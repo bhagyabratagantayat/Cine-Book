@@ -10,11 +10,27 @@ const bookingSchema = new mongoose.Schema({
   showTime: { type: String, required: true },
   showDate: { type: String, required: true },
   seats: [{ type: String, required: true }],
-  totalAmount: { type: Number, required: true },
-  paymentId: { type: String, required: true },
+  user: { type: String, required: true }, // userId or guestId
+  foodItems: [{
+    foodId: String,
+    name: String,
+    quantity: Number,
+    price: Number,
+    total: Number
+  }],
+  foodTotal: { type: Number, default: 0 },
+  couponCode: { type: String },
+  couponDiscount: { type: Number, default: 0 },
+  discountAmount: { type: Number, default: 0 }, // Same as couponDiscount for backward compatibility if needed
+  walletPaidAmount: { type: Number, default: 0 },
+  cashbackEarned: { type: Number, default: 0 },
+  walletBalanceBefore: { type: Number, default: 0 },
+  walletBalanceAfter: { type: Number, default: 0 },
+  subTotal: { type: Number, required: true }, // Ticket Total + Food Total
+  totalAmount: { type: Number, required: true }, // subTotal - discountAmount
+  paymentId: { type: String },
   paymentMethod: { type: String, required: true, default: 'UPI' },
   bookingStatus: { type: String, enum: ['confirmed', 'cancelled'], default: 'confirmed' },
-  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, // Optional for now
 }, { timestamps: true });
 
 // Check if model already exists to prevent OverwriteModelError

@@ -24,6 +24,9 @@ app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/movies', require('./routes/movieRoutes'));
 app.use('/api/shows', require('./routes/showRoutes'));
 app.use('/api/bookings', require('./routes/bookingRoutes'));
+app.use('/api/food', require('./routes/foodRoutes'));
+app.use('/api/coupon', require('./routes/couponRoutes'));
+app.use('/api/wallet', require('./routes/walletRoutes'));
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGODB_URI)

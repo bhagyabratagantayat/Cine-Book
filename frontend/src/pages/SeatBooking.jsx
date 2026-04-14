@@ -231,10 +231,10 @@ const SeatBooking = () => {
                      <span className="text-3xl font-black italic text-primary tracking-tighter">₹{totalPrice}</span>
                   </div>
                   <button 
-                    onClick={() => navigate(`/summary/${showId}`)}
+                    onClick={() => navigate(`/food/${showId}`)}
                     className="bg-primary hover:bg-red-600 px-12 py-4 rounded-2xl font-black italic uppercase tracking-widest transition-all shadow-xl shadow-primary/30 flex items-center gap-3"
                   >
-                    Proceed to Pay
+                    Add Snacks
                     <ChevronRight className="w-5 h-5" />
                   </button>
                </div>

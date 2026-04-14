@@ -14,15 +14,28 @@ export const BookingProvider = ({ children }) => {
     // Initial state from localStorage or default
     const [bookingData, setBookingData] = useState(() => {
         const saved = localStorage.getItem('cinebook_booking');
-        return saved ? JSON.parse(saved) : {
+        let guestId = localStorage.getItem('guestUserId');
+        
+        if (!guestId) {
+            guestId = 'G' + Math.random().toString(36).substr(2, 9).toUpperCase();
+            localStorage.setItem('guestUserId', guestId);
+        }
+
+        const defaultData = {
             showId: null,
             movie: null,
             theatre: null,
             showTime: null,
             showDate: null,
             seats: [],
-            totalPrice: 0
+            totalPrice: 0,
+            selectedFoods: [],
+            totalFoodPrice: 0,
+            appliedCoupon: null,
+            guestUserId: guestId
         };
+
+        return saved ? { ...defaultData, ...JSON.parse(saved) } : defaultData;
     });
 
     // Persist to localStorage whenever bookingData changes
