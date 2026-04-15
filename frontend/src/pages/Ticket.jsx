@@ -46,14 +46,12 @@ const Ticket = () => {
     try {
       console.log('[Frontend] Requesting PDF for:', bookingId);
       
-      const response = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/bookings/pdf`, 
-        { bookingId },
-        { responseType: 'blob' } // Crucial for receiving binary PDF
+      const response = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/pdf/${bookingId}`, 
+        { responseType: 'blob' }
       );
 
       // Create a blob URL and trigger download
-      const blob = new Blob([response.data], { type: 'application/pdf' });
-      const url = window.URL.createObjectURL(blob);
+      const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
       link.href = url;
       link.setAttribute('download', `CineBook_Ticket_${bookingId}.pdf`);
